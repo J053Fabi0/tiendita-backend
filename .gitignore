@@ -1,0 +1,5 @@
+node_modules
+downloads
+Session.vim
+utils/constants.js
+db/database.db
