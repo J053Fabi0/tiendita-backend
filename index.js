@@ -7,7 +7,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const whitelist = ["https://btc.josefabio.com"];
+const whitelist = ["https://tiendita.josefabio.com"];
 app.use(
   require("./utils/constants").usingCors
     ? require("cors")({
@@ -22,7 +22,7 @@ app.use(
     : require("cors")()
 );
 
-app.use(require("./routes"));
+app.use(require("./routes/routes.js"));
 
 const { address } = require("ip");
 const activateServer = (port) =>
@@ -34,4 +34,20 @@ const activateServer = (port) =>
         activateServer(port + 1);
       }
     });
-activateServer(3022);
+activateServer(3023);
+
+// const { productsDB, filtersDB, personsDB, salesDB } = require("./db/collections/collections");
+
+// console.log(salesDB.find({}));
+
+// personsDB.insertOne({ name: "Jose Fabio" });
+
+// filtersDB.insertOne({ name: "Vestido" });
+
+// productsDB.insertOne({
+//   name: "Producto 1",
+//   price: 1.99,
+//   stock: 10,
+//   filters: [0],
+//   description: "Esta es una pequeña descripción.",
+// });
