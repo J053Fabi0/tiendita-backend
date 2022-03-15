@@ -29,3 +29,4 @@ module.exports.deleteTag = a(Joi.object({ id: Joi.number().custom(validIDs(tagsD
 module.exports.patchCategory = a(
   Joi.object({ name, id: Joi.number().custom(validIDs(categoriesDB)).required() }).or("name")
 );
+module.exports.patchTag = a(Joi.object({ name, id: Joi.number().custom(validIDs(tagsDB)).required() }).or("name"));

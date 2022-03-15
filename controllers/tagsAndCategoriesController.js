@@ -95,4 +95,16 @@ a.patchCategory = ({ body: { id, ...newData } }, res) => {
   }
 };
 
+a.patchTag = ({ body: { id, ...newData } }, res) => {
+  try {
+    const obj = tagsDB.findOne({ $loki: id });
+    const newDataKeys = Object.keys(newData);
+    for (const newDataKey of newDataKeys) obj[newDataKey] = newData[newDataKey];
+
+    res.send().status(200);
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
 module.exports = a;
