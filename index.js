@@ -1,6 +1,3 @@
-/*
- * Exrpess
- */
 const express = require("express");
 const app = express();
 
@@ -35,19 +32,3 @@ const activateServer = (port) =>
       }
     });
 activateServer(3023);
-
-// const { productsDB, filtersDB, personsDB, salesDB } = require("./db/collections/collections");
-
-// console.log(salesDB.find({}));
-
-// personsDB.insertOne({ name: "Jose Fabio" });
-
-// filtersDB.insertOne({ name: "Vestido" });
-
-// productsDB.insertOne({
-//   name: "Producto 1",
-//   price: 1.99,
-//   stock: 10,
-//   filters: [0],
-//   description: "Esta es una pequeña descripción.",
-// });

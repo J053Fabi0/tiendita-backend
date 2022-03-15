@@ -1,5 +1,5 @@
 const handleError = require("../utils/handleError");
-const { productsDB, filtersDB, salesDB } = require("../db/collections/collections");
+const { productsDB, salesDB } = require("../db/collections/collections");
 
 const a = {};
 
@@ -11,9 +11,16 @@ a.getProducts = (_, res) => {
   }
 };
 
-a.getFilters = (_, res) => {
+a.getSales = ({ body: { persons, products, tagsBehavior, tags, from } }, res) => {
   try {
-    res.send({ message: filtersDB.find({}).map(({ meta: _, $loki: id, ...filter }) => ({ ...filter, id })) });
+    res.send({
+      message: salesDB
+        .chain()
+        .find({ person: { $in: persons }, product: { $in: products }, date: { $gte: from } })
+        .simplesort("date", { desc: true }) // los más recientes primero
+        .data()
+        .map(({ meta: _, $loki: id, ...sale }) => ({ id, ...sale })),
+    });
   } catch (e) {
     handleError(res, e);
   }

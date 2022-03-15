@@ -1,9 +1,9 @@
 const router = require("express").Router();
-const c = require("../controllers/salesController");
 const s = require("../schemas/salesSchema");
+const c = require("../controllers/salesController");
 
 router.get("/products", c.getProducts);
-router.get("/filters", c.getFilters);
+router.get("/sales", s.getSales, c.getSales);
 
 router.post("/newSale", s.postNewSale, c.postNewSale);
 
