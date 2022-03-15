@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const { validIDs, a } = require("./schemaUtils");
-const { categoriesDB, productsDB } = require("../db/collections/collections");
+const { categoriesDB, productsDB, tagsDB } = require("../db/collections/collections");
 
 const name = Joi.string().min(1).max(15).trim();
 const optionalArrayWithAllIDsOfDB = (db) =>
@@ -25,3 +25,4 @@ module.exports.postTag = a(
 );
 
 module.exports.deleteCategory = a(Joi.object({ id: Joi.number().custom(validIDs(categoriesDB)).required() }));
+module.exports.deleteTag = a(Joi.object({ id: Joi.number().custom(validIDs(tagsDB)).required() }));

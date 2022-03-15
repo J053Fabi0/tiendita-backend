@@ -49,10 +49,33 @@ a.postTag = ({ body: { name, category, products } }, res) => {
   }
 };
 
+const deleteCategory = (id) => {
+  categoriesDB.findAndRemove({ $loki: id });
+  tagsDB.findAndRemove({ category: id });
+};
 a.deleteCategory = ({ body: { id } }, res) => {
   try {
-    categoriesDB.findAndRemove({ $loki: id });
-    tagsDB.findAndRemove({ category: id });
+    deleteCategory(id);
+    res.send().status(204);
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
+a.deleteTag = ({ body: { id: tagID } }, res) => {
+  try {
+    const { category: categoryID } = tagsDB.findOne({ $loki: tagID });
+    tagsDB.findAndRemove({ $loki: tagID });
+    const category = categoriesDB.findOne({ $loki: categoryID });
+    const tags = category.tags;
+    const tagIndex = tags.indexOf(tagID);
+
+    if (tags.length === 1) {
+      deleteCategory(categoryID);
+    } else if (tagIndex !== -1) {
+      category.tags = [...tags.slice(0, tagIndex), ...tags.slice(tagIndex + 1)];
+    }
+
     res.send().status(204);
   } catch (e) {
     handleError(res, e);
