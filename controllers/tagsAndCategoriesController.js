@@ -39,7 +39,21 @@ a.postCategory = ({ body: { name, tags } }, res) => {
 
 a.postTag = ({ body: { name, category, products } }, res) => {
   try {
-    res.send({ message: tagsDB.insertOne({ name, category, products }).$loki });
+    const tagID = tagsDB.insertOne({ name, category, products }).$loki;
+    const thisCategory = categoriesDB.findOne({ $loki: category });
+    thisCategory.tags = [...thisCategory.tags, tagID];
+
+    res.send({ message: tagID });
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
+a.deleteCategory = ({ body: { id } }, res) => {
+  try {
+    categoriesDB.findAndRemove({ $loki: id });
+    tagsDB.findAndRemove({ category: id });
+    res.send().status(204);
   } catch (e) {
     handleError(res, e);
   }

@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const validateRequest = require("../utils/validateRequest");
+const { a, validIDs } = require("./schemaUtils");
 const { personsDB, productsDB, tagsDB } = require("../db/collections/collections");
 
 const optionalArrayWithAllIDsOfDB = (db) =>
@@ -7,28 +7,24 @@ const optionalArrayWithAllIDsOfDB = (db) =>
     .min(1)
     .unique()
     .default(db.find({}).map(({ $loki }) => $loki))
-    .items(Joi.number().valid(...db.find({}).map(({ $loki }) => $loki)));
+    .items(Joi.number().custom(validIDs(db)));
 
-module.exports.getSales = (req, res, next) => {
-  const schema = Joi.object({
+module.exports.getSales = a(
+  Joi.object({
     persons: optionalArrayWithAllIDsOfDB(personsDB),
     products: optionalArrayWithAllIDsOfDB(productsDB),
     tags: Joi.array()
       .min(1)
       .unique()
-      .items(Joi.number().valid(...tagsDB.find({}).map(({ $loki }) => $loki))),
+      .items(Joi.number().custom(validIDs(tagsDB))),
     tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
     from: Joi.number().positive().integer().default(0).max(Date.now()),
-  });
+  })
+);
 
-  validateRequest(req, res, next, schema);
-};
-
-module.exports.postNewSale = (req, res, next) => {
-  const schema = Joi.object({
-    person: Joi.number()
-      .required()
-      .valid(...personsDB.find({}).map(({ $loki }) => $loki)),
+module.exports.postNewSale = a(
+  Joi.object({
+    person: Joi.number().required().custom(validIDs(personsDB)),
 
     date: Joi.number().positive().integer().default(Date.now()).max(Date.now()),
 
@@ -37,9 +33,7 @@ module.exports.postNewSale = (req, res, next) => {
       .required()
       .items(
         Joi.object({
-          product: Joi.number()
-            .valid(...productsDB.find({}).map(({ $loki }) => $loki))
-            .required(),
+          product: Joi.number().custom(validIDs(productsDB)).required(),
 
           quantity: Joi.number().min(1).integer().default(1),
 
@@ -50,7 +44,5 @@ module.exports.postNewSale = (req, res, next) => {
             .default(({ product }) => productsDB.findOne({ $loki: product }).price),
         })
       ),
-  });
-
-  validateRequest(req, res, next, schema);
-};
+  })
+);
