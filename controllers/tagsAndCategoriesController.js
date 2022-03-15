@@ -3,6 +3,24 @@ const { tagsDB, categoriesDB } = require("../db/collections/collections");
 
 const a = {};
 
+a.getTags = (_, res) => {
+  try {
+    res.send({
+      message: categoriesDB.find({}).map(({ meta: _, $loki: id, tags, ...data }) => ({
+        id,
+        ...data,
+
+        tags: tags.map(($loki) => {
+          const { $loki: id, name } = tagsDB.findOne({ $loki });
+          return { id, name };
+        }),
+      })),
+    });
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
 a.postCategory = ({ body: { name, tags } }, res) => {
   try {
     const category = categoriesDB.insertOne({ name, tags: [] });

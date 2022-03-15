@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const validateRequest = require("../utils/validateRequest");
-const { tagsDB, categoriesDB, productsDB } = require("../db/collections/collections");
+const { categoriesDB, productsDB } = require("../db/collections/collections");
 
 const a =
   (schema, element = undefined) =>
