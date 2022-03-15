@@ -12,6 +12,7 @@ const optionalArrayWithAllIDsOfDB = (db) =>
     .items(Joi.number().custom(validIDs(db)));
 
 module.exports.getProducts = a(Joi.object({ enabled: Joi.boolean().default(true) }));
+module.exports.getProduct = a(Joi.object({ id: Joi.number().custom(validIDs(productsDB)).required() }));
 
 module.exports.postProduct = a(
   Joi.object({

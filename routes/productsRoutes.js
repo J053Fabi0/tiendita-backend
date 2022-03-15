@@ -3,7 +3,7 @@ const s = require("../schemas/productsSchema");
 const c = require("../controllers/productsController");
 
 router.get("/products", s.getProducts, c.getProducts);
-// router.get("/product", s.getProduct, c.getProduct);
+router.get("/product", s.getProduct, c.getProduct);
 
 router.post("/product", s.postProduct, c.postProduct);
 
