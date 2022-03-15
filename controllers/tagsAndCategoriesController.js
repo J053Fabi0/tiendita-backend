@@ -70,13 +70,26 @@ a.deleteTag = ({ body: { id: tagID } }, res) => {
     const tags = category.tags;
     const tagIndex = tags.indexOf(tagID);
 
-    if (tags.length === 1) {
-      deleteCategory(categoryID);
-    } else if (tagIndex !== -1) {
-      category.tags = [...tags.slice(0, tagIndex), ...tags.slice(tagIndex + 1)];
-    }
+    if (tagIndex !== -1)
+      if (tags.length === 1) {
+        deleteCategory(categoryID);
+      } else {
+        category.tags = [...tags.slice(0, tagIndex), ...tags.slice(tagIndex + 1)];
+      }
 
     res.send().status(204);
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
+a.patchCategory = ({ body: { id, ...newData } }, res) => {
+  try {
+    const obj = categoriesDB.findOne({ $loki: id });
+    const newDataKeys = Object.keys(newData);
+    for (const newDataKey of newDataKeys) obj[newDataKey] = newData[newDataKey];
+
+    res.send().status(200);
   } catch (e) {
     handleError(res, e);
   }

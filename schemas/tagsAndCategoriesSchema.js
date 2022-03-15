@@ -15,7 +15,6 @@ module.exports.postCategory = a(
     tags: Joi.array().required().min(1).items(name),
   })
 );
-
 module.exports.postTag = a(
   Joi.object({
     name: name.required(),
@@ -26,3 +25,7 @@ module.exports.postTag = a(
 
 module.exports.deleteCategory = a(Joi.object({ id: Joi.number().custom(validIDs(categoriesDB)).required() }));
 module.exports.deleteTag = a(Joi.object({ id: Joi.number().custom(validIDs(tagsDB)).required() }));
+
+module.exports.patchCategory = a(
+  Joi.object({ name, id: Joi.number().custom(validIDs(categoriesDB)).required() }).or("name")
+);
