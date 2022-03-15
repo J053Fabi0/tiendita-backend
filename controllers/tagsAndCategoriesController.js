@@ -19,4 +19,12 @@ a.postCategory = ({ body: { name, tags } }, res) => {
   }
 };
 
+a.postTag = ({ body: { name, category, products } }, res) => {
+  try {
+    res.send({ message: tagsDB.insertOne({ name, category, products }).$loki });
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
 module.exports = a;
