@@ -12,7 +12,7 @@ const optionalArrayWithAllIDsOfDB = (db) =>
 module.exports.postCategory = a(
   Joi.object({
     name: name.required(),
-    tags: Joi.array().required().min(1).items(name),
+    tags: Joi.array().required().min(1).items(name).unique(),
   })
 );
 module.exports.postTag = a(

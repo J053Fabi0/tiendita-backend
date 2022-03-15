@@ -1,15 +1,7 @@
 const handleError = require("../utils/handleError");
-const { productsDB, salesDB } = require("../db/collections/collections");
+const { salesDB } = require("../db/collections/collections");
 
 const a = {};
-
-a.getProducts = (_, res) => {
-  try {
-    res.send({ message: productsDB.find({}).map(({ meta: _, $loki: id, ...product }) => ({ ...product, id })) });
-  } catch (e) {
-    handleError(res, e);
-  }
-};
 
 a.getSales = ({ body: { persons, products, tagsBehavior, tags, from } }, res) => {
   try {
