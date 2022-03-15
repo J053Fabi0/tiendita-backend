@@ -1,13 +1,19 @@
 const handleError = require("../utils/handleError");
-const { tagsDB } = require("../db/collections/collections");
+const { tagsDB, categoriesDB } = require("../db/collections/collections");
 
 const a = {};
 
-a.postTags = (_, res) => {
+a.postCategory = ({ body: { name, tags } }, res) => {
   try {
-    const tags = tagsDB.find({}).map(({ meta: _, $loki: id, ...tags }) => ({ ...tags, id }));
+    const category = categoriesDB.insertOne({ name, tags: [] });
 
-    res.send({ message: tags });
+    for (const tagName of tags)
+      category.tags = [
+        ...category.tags,
+        tagsDB.insertOne({ name: tagName, products: [], category: category.$loki }).$loki,
+      ];
+
+    res.send({ message: { id: category.$loki, tagsIDs: category.tags } });
   } catch (e) {
     handleError(res, e);
   }
