@@ -21,7 +21,7 @@ module.exports.postProduct = a(
   })
 );
 
-// module.exports.deleteCategory = a(Joi.object({ id: Joi.number().custom(validIDs(categoriesDB)).required() }));
+module.exports.deleteProduct = a(Joi.object({ id: Joi.number().custom(validIDs(productsDB)).required() }));
 
 module.exports.patchProduct = a(
   Joi.object({
@@ -29,6 +29,7 @@ module.exports.patchProduct = a(
     price,
     stock,
     description,
+    enabled: Joi.boolean(),
 
     deleteTags: Joi.array()
       .min(1)
@@ -53,5 +54,5 @@ module.exports.patchProduct = a(
       ),
 
     id: Joi.number().custom(validIDs(productsDB)).required(),
-  }).or("name", "price", "stock", "description", "deleteTags", "addTags")
+  }).or("name", "price", "stock", "description", "enabled", "deleteTags", "addTags")
 );

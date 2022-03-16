@@ -31,6 +31,15 @@ a.postProduct = ({ body }, res) => {
   }
 };
 
+a.deleteProduct = ({ body: { id } }, res) => {
+  try {
+    productsDB.findOne({ $loki: id }).enabled = false;
+    res.send().status(204);
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
 a.patchProduct = ({ body: { id, deleteTags, addTags, ...newData } }, res) => {
   try {
     const obj = productsDB.findOne({ $loki: id });
