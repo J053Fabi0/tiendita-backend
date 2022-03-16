@@ -32,3 +32,5 @@ const activateServer = (port) =>
       }
     });
 activateServer(3023);
+
+module.exports = app;
