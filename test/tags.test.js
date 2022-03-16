@@ -9,7 +9,7 @@ const whipeData = () => {
 
 beforeEach(whipeData);
 
-describe("POST /tags", () => {
+describe("POST /tag", () => {
   it("should specify json as the content type in the http header", async () => {
     await request(app)
       .post("/category")
@@ -77,7 +77,7 @@ describe("GET /tags", () => {
   });
 });
 
-describe("DELETE /tags", () => {
+describe("DELETE /tag", () => {
   describe("when tag exists", () => {
     it("should return status 204 and no body", async () => {
       await request(app)
@@ -117,6 +117,52 @@ describe("DELETE /tags", () => {
       await request(app).delete("/tag").send({ id: 1 });
 
       expect(categoriesDB.findOne({ $loki: 1 }).tags).not.toContain(1);
+    });
+  });
+
+  describe("when tag doesn't exists", () => {
+    it("should respond with an error", async () => {
+      const response = await request(app).delete("/tag").send({ id: 1 });
+      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
+    });
+  });
+});
+
+describe("PATCH /tag", () => {
+  describe("when the tag exists", () => {
+    it("should send a 200 status and no body", async () => {
+      await request(app)
+        .post("/category")
+        .send({ name: "a", tags: ["a"] });
+
+      const response = await request(app).patch("/tag").send({ id: 1, name: "a" });
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({});
+    });
+
+    it("should update the values given", async () => {
+      const datas = [["name", "A"]];
+
+      for (const [key, value] of datas) {
+        await request(app)
+          .post("/category")
+          .send({ name: "a", tags: ["a"] });
+
+        const response = await request(app)
+          .patch("/tag")
+          .send({ id: 1, [key]: value });
+
+        expect(tagsDB.findOne({ $loki: 1 })[key]).toEqual(value);
+
+        whipeData();
+      }
+    });
+  });
+
+  describe("when tag doesn't exists", () => {
+    it("should respond with an error", async () => {
+      const response = await request(app).patch("/tag").send({ id: 1, name: "a" });
+      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
     });
   });
 });
