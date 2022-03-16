@@ -2,9 +2,9 @@ const loki = require("lokijs");
 const lfsa = require("../node_modules/lokijs/src/loki-fs-sync-adapter");
 
 // Instanciarla.
-const db = new loki("./db/database.db", { adapter: new lfsa() });
+const filename = process.env.NODE_ENV === "test" ? "test.db" : "database.db";
+const db = new loki(require("path").join(__dirname, filename), { adapter: new lfsa() });
 
-const { autosaveInterval } = require("../utils/constants");
 const autosave = () =>
   setTimeout(() => {
     db.saveDatabase((err) => {
@@ -12,11 +12,14 @@ const autosave = () =>
       autosave();
     });
   }, 4_000);
-autosave();
 
-// Cargar la base de datos síncronamente desde el archivo '*.db'.
-db.loadDatabase();
+if (process.env.NODE_ENV !== "test") {
+  autosave();
 
-console.log("Database loaded.");
+  // Cargar la base de datos síncronamente desde el archivo '*.db'.
+  db.loadDatabase();
+
+  console.log("Database loaded.");
+}
 
 module.exports = db;

@@ -1,11 +1,7 @@
 const app = require("../index");
 const request = require("supertest");
+const { whipeData } = require("./testUtils");
 const { tagsDB, categoriesDB } = require("../db/collections/collections");
-
-const whipeData = () => {
-  tagsDB.clear({ removeIndices: true });
-  categoriesDB.clear({ removeIndices: true });
-};
 
 beforeEach(whipeData);
 

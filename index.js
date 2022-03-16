@@ -27,7 +27,7 @@ const activateServer = (port) =>
     .listen(port, () => console.log(`Server on http://${address()}:${port}`))
     .on("error", (err) => {
       if (err.code === "EADDRINUSE") {
-        console.log("Error EADDRINUSE on port " + port);
+        if (process.env.NODE_ENV !== "test") console.log("Error EADDRINUSE on port " + port);
         activateServer(port + 1);
       }
     });
