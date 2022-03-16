@@ -9,6 +9,6 @@ router.post("/product", s.postProduct, c.postProduct);
 
 // router.delete("/product", s.deleteProduct, c.deleteProduct);
 
-// router.patch("/product", s.patchProduct, c.patchProduct);
+router.patch("/product", s.patchProduct, c.patchProduct);
 
 module.exports = router;

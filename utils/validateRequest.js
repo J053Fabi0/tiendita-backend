@@ -4,7 +4,7 @@ const handleError = require("./handleError");
 module.exports = function (req, res, next, schema, element = "body") {
   const options = {
     convert: true,
-    abortEarly: false, // incluír todos los errores
+    abortEarly: true, // incluír todos los errores
     stripUnknown: true, // eliminar los unknown
   };
   const { error, value } = schema.validate(req[element], options);
@@ -20,10 +20,10 @@ module.exports = function (req, res, next, schema, element = "body") {
     };
 
   if (error)
-    return handleError(
-      res,
-      `Validation error: ${error.details.map((x) => x.message).join(", ")}`.replace(/\"/g, "'")
-    );
+    return handleError(res, {
+      description: `Validation error: ${error.details.map((x) => x.message).join(", ")}`.replace(/\"/g, "'"),
+      details: error.details,
+    });
 
   req[element] = value;
   next();

@@ -1,18 +1,11 @@
 const Joi = require("joi");
-const { a, validIDs } = require("./schemaUtils");
 const { personsDB, productsDB, tagsDB } = require("../db/collections/collections");
-
-const optionalArrayWithAllIDsOfDB = (db) =>
-  Joi.array()
-    .min(1)
-    .unique()
-    .default(db.find({}).map(({ $loki }) => $loki))
-    .items(Joi.number().custom(validIDs(db)));
+const { a, validIDs, optionalArrayWithAllIDsOfDB: arrayIDs } = require("./schemaUtils");
 
 module.exports.getSales = a(
   Joi.object({
-    persons: optionalArrayWithAllIDsOfDB(personsDB),
-    products: optionalArrayWithAllIDsOfDB(productsDB),
+    persons: arrayIDs(personsDB).default(personsDB.find({}).map(({ $loki }) => $loki)),
+    products: arrayIDs(productsDB).default(productsDB.find({}).map(({ $loki }) => $loki)),
     tags: Joi.array()
       .min(1)
       .unique()

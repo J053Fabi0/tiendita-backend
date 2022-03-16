@@ -1,15 +1,11 @@
 const Joi = require("joi");
-const { validIDs, a } = require("./schemaUtils");
-const { categoriesDB, productsDB, tagsDB } = require("../db/collections/collections");
+const { productsDB, tagsDB } = require("../db/collections/collections");
+const { validIDs, a, optionalArrayWithAllIDsOfDB } = require("./schemaUtils");
 
 const name = Joi.string().min(1).max(50).trim();
 const price = Joi.number().positive().precision(2);
 const stock = Joi.number().positive().integer();
-const optionalArrayWithAllIDsOfDB = (db) =>
-  Joi.array()
-    .min(1)
-    .unique()
-    .items(Joi.number().custom(validIDs(db)));
+const description = Joi.string().max(400);
 
 module.exports.getProducts = a(Joi.object({ enabled: Joi.boolean().default(true) }));
 module.exports.getProduct = a(Joi.object({ id: Joi.number().custom(validIDs(productsDB)).required() }));
@@ -20,13 +16,42 @@ module.exports.postProduct = a(
     price: price.required(),
     stock: stock.required(),
     enabled: Joi.boolean().default(true),
-    description: Joi.string().default(""),
+    description: description.default(""),
     tags: optionalArrayWithAllIDsOfDB(tagsDB).default([]),
   })
 );
 
 // module.exports.deleteCategory = a(Joi.object({ id: Joi.number().custom(validIDs(categoriesDB)).required() }));
 
-// module.exports.patchCategory = a(
-//   Joi.object({ name, id: Joi.number().custom(validIDs(categoriesDB)).required() }).or("name")
-// );
+module.exports.patchProduct = a(
+  Joi.object({
+    name,
+    price,
+    stock,
+    description,
+
+    deleteTags: Joi.array()
+      .min(1)
+      .items(
+        Joi.number().custom((tag, { error, state }) => {
+          const valids = productsDB.findOne({ $loki: state.ancestors[1].id })?.tags || [];
+          return valids.includes(tag) ? tag : error("any.only", { valids });
+        })
+      ),
+    addTags: Joi.array()
+      .min(1)
+      .unique()
+      .items(
+        Joi.number().custom((id, { error, state }) => {
+          // tags already present are invalid
+          const invalids = productsDB.findOne({ $loki: state.ancestors[1].id })?.tags || [];
+          if (invalids.includes(id)) return error("any.invalid", { invalids });
+
+          const valids = tagsDB.find({}).map(({ $loki }) => $loki);
+          return valids.includes(id) ? id : error("any.only", { valids });
+        })
+      ),
+
+    id: Joi.number().custom(validIDs(productsDB)).required(),
+  }).or("name", "price", "stock", "description", "deleteTags", "addTags")
+);

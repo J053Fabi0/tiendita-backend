@@ -1,13 +1,8 @@
 const Joi = require("joi");
-const { validIDs, a } = require("./schemaUtils");
+const { validIDs, a, optionalArrayWithAllIDsOfDB } = require("./schemaUtils");
 const { categoriesDB, productsDB, tagsDB } = require("../db/collections/collections");
 
 const name = Joi.string().min(1).max(15).trim();
-const optionalArrayWithAllIDsOfDB = (db) =>
-  Joi.array()
-    .min(1)
-    .unique()
-    .items(Joi.number().custom(validIDs(db)));
 
 module.exports.postCategory = a(
   Joi.object({
