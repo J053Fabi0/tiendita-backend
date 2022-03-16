@@ -1,5 +1,5 @@
 const handleError = require("../utils/handleError");
-const { tagsDB, categoriesDB } = require("../db/collections/collections");
+const { tagsDB, categoriesDB, productsDB } = require("../db/collections/collections");
 
 const a = {};
 
@@ -49,12 +49,23 @@ a.postTag = ({ body: { name, category, products } }, res) => {
   }
 };
 
+const deleteTagFromProducts = (tagID) => {
+  const products = productsDB.find({ tags: { $contains: tagID } });
+  for (const product of products) {
+    const tags = [...product.tags];
+    tags.splice(tags.indexOf(tagID), 1);
+    product.tags = tags;
+  }
+};
 const deleteCategory = (id) => {
   categoriesDB.findAndRemove({ $loki: id });
   tagsDB.findAndRemove({ category: id });
 };
 a.deleteCategory = ({ body: { id } }, res) => {
   try {
+    const tagsInCategory = tagsDB.find({ category: id });
+    for (const { $loki: tagID } of tagsInCategory) deleteTagFromProducts(tagID);
+
     deleteCategory(id);
     res.send().status(204);
   } catch (e) {
@@ -76,6 +87,8 @@ a.deleteTag = ({ body: { id: tagID } }, res) => {
       } else {
         category.tags = [...tags.slice(0, tagIndex), ...tags.slice(tagIndex + 1)];
       }
+
+    deleteTagFromProducts(tagID);
 
     res.send().status(204);
   } catch (e) {
