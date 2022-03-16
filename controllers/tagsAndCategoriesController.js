@@ -67,7 +67,7 @@ a.deleteCategory = ({ body: { id } }, res) => {
     for (const { $loki: tagID } of tagsInCategory) deleteTagFromProducts(tagID);
 
     deleteCategory(id);
-    res.send().status(204);
+    res.status(204).send();
   } catch (e) {
     handleError(res, e);
   }
@@ -90,7 +90,7 @@ a.deleteTag = ({ body: { id: tagID } }, res) => {
 
     deleteTagFromProducts(tagID);
 
-    res.send().status(204);
+    res.status(204).send();
   } catch (e) {
     handleError(res, e);
   }
@@ -102,7 +102,7 @@ a.patchCategory = ({ body: { id, ...newData } }, res) => {
     const newDataKeys = Object.keys(newData);
     for (const newDataKey of newDataKeys) obj[newDataKey] = newData[newDataKey];
 
-    res.send().status(200);
+    res.send();
   } catch (e) {
     handleError(res, e);
   }
@@ -114,7 +114,7 @@ a.patchTag = ({ body: { id, ...newData } }, res) => {
     const newDataKeys = Object.keys(newData);
     for (const newDataKey of newDataKeys) obj[newDataKey] = newData[newDataKey];
 
-    res.send().status(200);
+    res.send();
   } catch (e) {
     handleError(res, e);
   }

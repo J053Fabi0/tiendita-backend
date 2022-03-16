@@ -34,7 +34,7 @@ a.postProduct = ({ body }, res) => {
 a.deleteProduct = ({ body: { id } }, res) => {
   try {
     productsDB.findOne({ $loki: id }).enabled = false;
-    res.send().status(204);
+    res.status(204).send();
   } catch (e) {
     handleError(res, e);
   }
@@ -58,7 +58,7 @@ a.patchProduct = ({ body: { id, deleteTags, addTags, ...newData } }, res) => {
       obj.tags = tags;
     }
 
-    res.send().status(200);
+    res.send();
   } catch (e) {
     handleError(res, e);
   }
