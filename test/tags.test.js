@@ -150,7 +150,7 @@ describe("PATCH /tag", () => {
           .post("/category")
           .send({ name: "a", tags: ["a"] });
 
-        const response = await request(app)
+        await request(app)
           .patch("/tag")
           .send({ id: 1, [key]: value });
 
