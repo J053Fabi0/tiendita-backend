@@ -1,7 +1,7 @@
 const app = require("../index");
 const request = require("supertest");
 const { whipeData } = require("./testUtils");
-const { tagsDB, categoriesDB } = require("../db/collections/collections");
+const { tagsDB, categoriesDB, productsDB } = require("../db/collections/collections");
 
 beforeEach(whipeData);
 
@@ -113,6 +113,20 @@ describe("DELETE /tag", () => {
       await request(app).delete("/tag").send({ id: 1 });
 
       expect(categoriesDB.findOne({ $loki: 1 }).tags).not.toContain(1);
+    });
+
+    it("should remove tags from products", async () => {
+      await request(app)
+        .post("/category")
+        .send({ name: "a", tags: ["a", "b"] });
+
+      productsDB.insertOne({ name: "a", price: 1, stock: 1, tags: [1] });
+
+      expect(productsDB.findOne({ $loki: 1 }).tags).toContain(1);
+
+      await request(app).delete("/tag").send({ id: 1 });
+
+      expect(productsDB.findOne({ $loki: 1 }).tags).not.toContain(1);
     });
   });
 
