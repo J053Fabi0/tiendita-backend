@@ -24,10 +24,10 @@ app.use(require("./routes/routes.js"));
 const { address } = require("ip");
 const activateServer = (port) =>
   app
-    .listen(port, () => console.log(`Server on http://${address()}:${port}`))
+    .listen(port, () => process.env.NODE_ENV === "test" || console.log(`Server on http://${address()}:${port}`))
     .on("error", (err) => {
       if (err.code === "EADDRINUSE") {
-        if (process.env.NODE_ENV !== "test") console.log("Error EADDRINUSE on port " + port);
+        process.env.NODE_ENV === "test" || console.log("Error EADDRINUSE on port " + port);
         activateServer(port + 1);
       }
     });
