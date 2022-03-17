@@ -6,35 +6,30 @@ const { tagsDB, categoriesDB, productsDB } = require("../db/collections/collecti
 beforeEach(whipeData);
 
 describe("POST /tag", () => {
-  it("should specify json as the content type in the http header", async () => {
-    await request(app)
-      .post("/category")
-      .send({ name: "a", tags: ["a"] });
-    const response = await request(app).post("/tag").send({ name: "b", category: 1 });
-    expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
-  });
-
   describe("if category exists", () => {
+    beforeEach(
+      async () =>
+        await request(app)
+          .post("/category")
+          .send({ name: "a", tags: ["a"] })
+    );
+
+    it("should specify json as the content type in the http header", async () => {
+      const response = await request(app).post("/tag").send({ name: "b", category: 1 });
+      expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
+    });
+
     it("should respond with the new $loki", async () => {
-      await request(app)
-        .post("/category")
-        .send({ name: "a", tags: ["a"] });
       const response = await request(app).post("/tag").send({ name: "b", category: 1 });
       expect(response.body.message).toBe(2);
     });
 
     it("should be added to the category", async () => {
-      await request(app)
-        .post("/category")
-        .send({ name: "a", tags: ["a"] });
       const response = await request(app).post("/tag").send({ name: "b", category: 1 });
       expect(categoriesDB.findOne({ $loki: 1 }).tags).toContain(response.body.message);
     });
 
     it("should exist on DB", async () => {
-      await request(app)
-        .post("/category")
-        .send({ name: "a", tags: ["a"] });
       const response = await request(app).post("/tag").send({ name: "b", category: 1 });
       expect(tagsDB.findOne({ $loki: response.body.message })).toBeTruthy();
     });
@@ -49,25 +44,24 @@ describe("POST /tag", () => {
 });
 
 describe("GET /tags", () => {
+  beforeEach(
+    async () =>
+      await request(app)
+        .post("/category")
+        .send({ name: "a", tags: ["a"] })
+  );
+
   it("should specify json as the content type in the http header", async () => {
     const response = await request(app).get("/tags");
     expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
   });
 
   it("should have tags expanded in each category", async () => {
-    await request(app)
-      .post("/category")
-      .send({ name: "a", tags: ["b", "c"] });
-
     const response = await request(app).get("/tags");
-    expect(response.body.message[0].tags[0]).toEqual({ name: "b", id: 1 });
+    expect(response.body.message[0].tags[0]).toEqual({ name: "a", id: 1 });
   });
 
   it("should have all categories in an array", async () => {
-    await request(app)
-      .post("/category")
-      .send({ name: "a", tags: ["b", "c"] });
-
     const response = await request(app).get("/tags");
     expect(response.body.message.length).toBe(1);
   });
@@ -118,7 +112,7 @@ describe("DELETE /tag", () => {
     it("should remove tags from products", async () => {
       await request(app)
         .post("/category")
-        .send({ name: "a", tags: ["a", "b"] });
+        .send({ name: "a", tags: ["a"] });
 
       productsDB.insertOne({ name: "a", price: 1, stock: 1, tags: [1] });
 
