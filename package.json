@@ -62,7 +62,9 @@
     "vary": "^1.1.2"
   },
   "scripts": {
-    "test": "jest --runInBand --forceExit ./test"
+    "test": "jest --verbose --forceExit -e ./test",
+    "testWatch": "jest --watch --forceExit ./test",
+    "testWatchAll": "jest --watchAll --forceExit ./test"
   },
   "jest": {
     "testEnvironment": "node"

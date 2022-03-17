@@ -123,9 +123,7 @@ describe("DELETE /tag", () => {
       productsDB.insertOne({ name: "a", price: 1, stock: 1, tags: [1] });
 
       expect(productsDB.findOne({ $loki: 1 }).tags).toContain(1);
-
       await request(app).delete("/tag").send({ id: 1 });
-
       expect(productsDB.findOne({ $loki: 1 }).tags).not.toContain(1);
     });
   });

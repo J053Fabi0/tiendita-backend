@@ -1,7 +1,7 @@
 const app = require("../index");
 const request = require("supertest");
 const { whipeData } = require("./testUtils");
-const { tagsDB, categoriesDB } = require("../db/collections/collections");
+const { tagsDB, categoriesDB, productsDB } = require("../db/collections/collections");
 
 beforeEach(whipeData);
 
@@ -48,5 +48,57 @@ describe("POST /category", () => {
       .post("/category")
       .send({ name: "a", tags: ["a"] });
     expect(tagsDB.findOne({ $loki: 1 })).toBeTruthy();
+  });
+});
+
+describe("DELETE /category", () => {
+  describe("if category exists", () => {
+    it("should return 204 and no body", async () => {
+      await request(app)
+        .post("/category")
+        .send({ name: "a", tags: ["a"] });
+
+      const response = await request(app).delete("/category").send({ id: 1 });
+      expect(response.statusCode).toBe(204);
+      expect(response.body).toEqual({});
+    });
+
+    it("should remove it from DB", async () => {
+      await request(app)
+        .post("/category")
+        .send({ name: "a", tags: ["a"] });
+
+      expect(categoriesDB.findOne({ $loki: 1 })).not.toBeNull;
+      await request(app).delete("/category").send({ id: 1 });
+      expect(categoriesDB.findOne({ $loki: 1 })).toBeNull;
+    });
+
+    it("should delete all tags whithin it", async () => {
+      await request(app)
+        .post("/category")
+        .send({ name: "a", tags: ["a"] });
+
+      expect(tagsDB.findOne({ $loki: 1 })).not.toBeNull;
+      const response = await request(app).delete("/category").send({ id: 1 });
+      expect(tagsDB.findOne({ $loki: 1 })).toBeNull;
+    });
+
+    it("should delete all tags from products", async () => {
+      await request(app)
+        .post("/category")
+        .send({ name: "a", tags: ["a"] });
+      productsDB.insertOne({ name: "a", price: 1, stock: 1, tags: [1] });
+
+      expect(productsDB.findOne({ $loki: 1 }).tags).toContain(1);
+      await request(app).delete("/category").send({ id: 1 });
+      expect(productsDB.findOne({ $loki: 1 }).tags).not.toContain(1);
+    });
+  });
+
+  describe("if category doesn't exists", () => {
+    it("should return an error", async () => {
+      const response = await request(app).delete("/category").send({ id: 1 });
+      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
+    });
   });
 });
