@@ -122,7 +122,7 @@ describe("DELETE /tag", () => {
     });
   });
 
-  describe("when tag doesn't exists", () => {
+  describe("when tag doesn't exist", () => {
     it("should respond with an error", async () => {
       const response = await request(app).delete("/tag").send({ id: 1 });
       expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
@@ -161,7 +161,7 @@ describe("PATCH /tag", () => {
     });
   });
 
-  describe("when tag doesn't exists", () => {
+  describe("when tag doesn't exist", () => {
     it("should respond with an error", async () => {
       const response = await request(app).patch("/tag").send({ id: 1, name: "a" });
       expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");

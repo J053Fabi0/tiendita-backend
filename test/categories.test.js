@@ -78,7 +78,7 @@ describe("DELETE /category", () => {
     });
   });
 
-  describe("if category doesn't exists", () => {
+  describe("if category doesn't exist", () => {
     it("should return an error", async () => {
       const response = await request(app).delete("/category").send({ id: 1 });
       expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
@@ -116,7 +116,7 @@ describe("PATCH /category", () => {
     });
   });
 
-  describe("if category doesn't exists", () => {
+  describe("if category doesn't exist", () => {
     it("should give an error", async () => {
       const response = await request(app).patch("/category").send({ id: 1, name: "a" });
       expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
