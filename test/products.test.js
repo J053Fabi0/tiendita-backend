@@ -55,3 +55,35 @@ describe("GET /product", () => {
     });
   });
 });
+
+describe("GET /products", () => {
+  beforeEach(() => {
+    productsDB.insert([
+      {
+        name: "a",
+        enabled: true,
+      },
+      {
+        name: "b",
+        enabled: false,
+      },
+    ]);
+  });
+
+  it("should specify json as the content type in the http header", async () => {
+    const response = await request(app).get("/products").send();
+    expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
+  });
+
+  it("should get all the enabled products", async () => {
+    const response = await request(app).get("/products").send();
+    expect(response.body.message.length).toBe(1);
+    expect(response.body.message[0].name).toBe("a");
+  });
+
+  it("should get all the disabled products, when enabled is false", async () => {
+    const response = await request(app).get("/products").send({ enabled: false });
+    expect(response.body.message.length).toBe(1);
+    expect(response.body.message[0].name).toBe("b");
+  });
+});
