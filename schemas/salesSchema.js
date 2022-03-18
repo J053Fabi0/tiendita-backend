@@ -12,6 +12,7 @@ module.exports.getSales = a(
       .items(Joi.number().custom(validIDs(tagsDB))),
     tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
     from: Joi.number().positive().integer().default(0).max(Date.now()),
+    enabled: Joi.boolean().default(true),
   })
 );
 
@@ -20,6 +21,8 @@ module.exports.postNewSale = a(
     person: Joi.number().required().custom(validIDs(personsDB)),
 
     date: Joi.number().positive().integer().default(Date.now()).max(Date.now()),
+
+    enabled: Joi.boolean().default(true),
 
     sales: Joi.array()
       .min(1)
@@ -34,7 +37,7 @@ module.exports.postNewSale = a(
 
           cash: Joi.number()
             .positive()
-            .default(({ product }) => productsDB.findOne({ $loki: product }).price),
+            .default(({ product, specialPrice }) => specialPrice ?? productsDB.findOne({ $loki: product }).price),
         })
       ),
   })

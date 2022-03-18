@@ -1,1 +1,1 @@
-module.exports = (db) => db.addCollection("sales", { indices: ["person", "product", "$loki"] });
+module.exports = (db) => db.addCollection("sales", { indices: ["person", "product", "$loki", "enabled"] });
