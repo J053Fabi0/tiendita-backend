@@ -34,12 +34,24 @@ describe("POST /product", () => {
 
 describe("GET /product", () => {
   describe("when the product exists", () => {
-    // should specify json as the content type in the http header
-    // it should give the product when it is not enabled
-    // it should give the product when it is enabled
+    beforeEach(async () => await request(app).post("/product").send({ name: "a", price: 1, stock: 1 }));
+
+    it("should specify json as the content type in the http header", async () => {
+      const response = await request(app).get("/product").send({ id: 1 });
+      expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
+    });
+
+    it("it should give the product", async () => {
+      const { message } = (await request(app).get("/product").send({ id: 1 })).body;
+      expect(message.name).toBe("a");
+      expect(message.price).toBe(1);
+    });
   });
 
   describe("when the product doesn't exists", () => {
-    // it should give an error
+    it("it should give an error", async () => {
+      const { error } = (await request(app).get("/product").send({ id: 1 })).body;
+      expect(error.description).toBe("Validation error: 'id' must be one of []");
+    });
   });
 });
