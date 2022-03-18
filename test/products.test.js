@@ -59,14 +59,8 @@ describe("GET /product", () => {
 describe("GET /products", () => {
   beforeEach(() => {
     productsDB.insert([
-      {
-        name: "a",
-        enabled: true,
-      },
-      {
-        name: "b",
-        enabled: false,
-      },
+      { name: "a", enabled: true },
+      { name: "b", enabled: false },
     ]);
   });
 
@@ -85,5 +79,32 @@ describe("GET /products", () => {
     const response = await request(app).get("/products").send({ enabled: false });
     expect(response.body.message.length).toBe(1);
     expect(response.body.message[0].name).toBe("b");
+  });
+});
+
+describe("DELETE /product", () => {
+  describe("when the product exists", () => {
+    beforeEach(() => productsDB.insertOne({ name: "a", enabled: true }));
+
+    it("should return status 204 and no body", async () => {
+      const response = await request(app).delete("/product").send({ id: 1 });
+      expect(response.statusCode).toBe(204);
+      expect(response.body).toEqual({});
+    });
+
+    it("should change its enabled value to false", async () => {
+      expect(productsDB.findOne({ $loki: 1 }).enabled).toBe(true);
+      await request(app).delete("/product").send({ id: 1 });
+      expect(productsDB.findOne({ $loki: 1 }).enabled).toBe(false);
+      await request(app).delete("/product").send({ id: 1 });
+      expect(productsDB.findOne({ $loki: 1 }).enabled).toBe(false);
+    });
+  });
+
+  describe("when the product doesn't exists", () => {
+    it("should give an error", async () => {
+      const response = await request(app).delete("/product").send({ id: 1 });
+      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
+    });
   });
 });
