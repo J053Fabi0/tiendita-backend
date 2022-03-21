@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { personsDB, productsDB, tagsDB } = require("../db/collections/collections");
+const { personsDB, productsDB, tagsDB, salesDB } = require("../db/collections/collections");
 const { a, validIDs, optionalArrayWithAllIDsOfDB: arrayIDs } = require("./schemaUtils");
 
 module.exports.getSales = a(
@@ -15,6 +15,8 @@ module.exports.getSales = a(
     enabled: Joi.boolean().default(true),
   })
 );
+
+module.exports.getSale = a(Joi.object({ id: Joi.number().custom(validIDs(salesDB)).required() }));
 
 module.exports.postSale = a(
   Joi.object({

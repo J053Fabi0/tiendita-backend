@@ -20,7 +20,7 @@ a.getSales = ({ body: { persons, products, tagsBehavior, tags, from } }, res) =>
 
 a.postSale = ({ body }, res) => {
   try {
-    const { $loki } = salesDB.insertOne({});
+    const { $loki } = salesDB.insertOne(body);
     res.status(200).send({ message: { id: $loki } });
   } catch (e) {
     handleError(res, e);
