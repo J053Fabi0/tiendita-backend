@@ -157,3 +157,28 @@ describe("GET /sales", () => {
     });
   });
 });
+
+describe("DELETE /sale", () => {
+  describe("when the sale exists", () => {
+    beforeEach(() => salesDB.insertOne({ enabled: false }));
+
+    it("should return status 204 and no body", async () => {
+      const response = await request(app).delete("/sale").send({ id: 1 });
+      expect(response.statusCode).toBe(204);
+      expect(response.body).toEqual({});
+    });
+
+    it("should set the enabled status to false", async () => {
+      expect(salesDB.findOne({ id: 1 }).enabled).toBe(true);
+      await request(app).delete("/sale").send({ id: 1 });
+      expect(salesDB.findOne({ id: 1 }).enabled).toBe(false);
+    });
+  });
+
+  describe("when de sale doesn't exist", () => {
+    it("should return an error", async () => {
+      await request(app).delete("/sale").send({ id: 1 });
+      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
+    });
+  });
+});
