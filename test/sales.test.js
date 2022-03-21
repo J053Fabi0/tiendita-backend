@@ -11,10 +11,10 @@ describe("POST /sale", () => {
     personsDB.insertOne({ name: "a" });
   });
 
-  it("should response with status 200 and no body", async () => {
+  it("should response with status 200 and the id of the new sale", async () => {
     const response = await request(app).post("/sale").send({ person: 1, product: 1 });
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({});
+    expect(response.body.message).toEqual({ id: 1 });
   });
 
   it("should exist on database", async () => {
@@ -179,6 +179,91 @@ describe("DELETE /sale", () => {
     it("should return an error", async () => {
       await request(app).delete("/sale").send({ id: 1 });
       expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
+    });
+  });
+});
+
+describe("PATCH /sale", () => {
+  describe("when de product exists", () => {
+    const beforeEachCb = () => {
+      personsDB.insertOne({ name: "a" });
+      productsDB.insertOne({ name: "a", price: 10, stock: 1, tags: [1, 2, 3], description: "a", enabled: true });
+      salesDB.insertOne({
+        ...{ person: 2, date: 1, product: 2, quantity: 1, cash: 1, specialPrice: 1, enabled: true },
+      });
+    };
+    beforeEach(beforeEachCb);
+
+    it("should return status 200 and no body", async () => {
+      const response = await request(app).delete("/sale").send({ id: 1 });
+      expect(response.statusCode).toBe(204);
+      expect(response.body).toEqual({});
+    });
+
+    it("should change the given values, quantity, cash, date or enabled", async () => {
+      const datas = [
+        ["cash", 2],
+        ["date", 2],
+        ["quantity", 2],
+        ["enabled", false],
+      ];
+
+      for (const [key, value] of datas) {
+        await request(app)
+          .patch("/sale")
+          .send({ id: 1, [key]: value });
+
+        expect(productsDB.findOne({ $loki: 1 })[key]).toEqual(value);
+
+        whipeData();
+        beforeEachCb();
+      }
+    });
+
+    describe("changing person", () => {
+      it("should change it", async () => {
+        expect(productsDB.findOne({ $loki: 1 }).person).toEqual(2);
+        await request(app).patch("/sale").send({ id: 1, person: 1 });
+        expect(productsDB.findOne({ $loki: 1 }).person).toEqual(1);
+      });
+
+      it("should return an error if the value is not valid", async () => {
+        await request(app).patch("/sale").send({ id: 1, person: 10 });
+        expect(response.body.error.description).toBe("");
+      });
+    });
+
+    describe("changing product", () => {
+      it("should change it", async () => {
+        expect(productsDB.findOne({ $loki: 1 }).product).toEqual(2);
+        await request(app).patch("/sale").send({ id: 1, product: 1 });
+        expect(productsDB.findOne({ $loki: 1 }).product).toEqual(1);
+      });
+
+      it("should return an error if the value is not valid", async () => {
+        await request(app).patch("/sale").send({ id: 1, product: 10 });
+        expect(response.body.error.description).toBe("");
+      });
+    });
+
+    describe("changing specialPrice", () => {
+      it("should change it if not -1 nor the same price as the product", async () => {
+        expect(productsDB.findOne({ $loki: 1 }).specialPrice).toEqual(1);
+        await request(app).patch("/sale").send({ id: 1, specialPrice: 100 });
+        expect(productsDB.findOne({ $loki: 1 }).specialPrice).toEqual(100);
+      });
+
+      it("should delete the value if set to -1", async () => {
+        expect(productsDB.findOne({ $loki: 1 }).specialPrice).toEqual(1);
+        await request(app).patch("/sale").send({ id: 1, specialPrice: -1 });
+        expect(productsDB.findOne({ $loki: 1 }).specialPrice).not.toHaveProperty("specialPrice");
+      });
+
+      it("should delete the value if set to the same price as the product", async () => {
+        expect(productsDB.findOne({ $loki: 1 }).specialPrice).toEqual(1);
+        await request(app).patch("/sale").send({ id: 1, specialPrice: 10 });
+        expect(productsDB.findOne({ $loki: 1 }).specialPrice).not.toHaveProperty("specialPrice");
+      });
     });
   });
 });

@@ -125,11 +125,11 @@ describe("PATCH /product", () => {
 
     it("should change the given values", async () => {
       const datas = [
-        ["name", "b"],
         ["price", 2],
         ["stock", 2],
-        ["description", "b"],
+        ["name", "b"],
         ["enabled", false],
+        ["description", "b"],
       ];
 
       for (const [key, value] of datas) {
