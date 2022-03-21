@@ -28,7 +28,7 @@ describe("POST /sale", () => {
       const response = await request(app)
         .post("/sale")
         .send({ person: 1, product: 1, specialPrice: 100, cash: 101 });
-      expect(response.body.error.description).toBe("");
+      expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 100");
     });
 
     it("should permit cash to be equal to specialPrice", async () => {
@@ -41,7 +41,7 @@ describe("POST /sale", () => {
   describe("when specialPrice isn't given", () => {
     it("should not permit cash to go higher than price", async () => {
       const response = await request(app).post("/sale").send({ person: 1, product: 1, cash: 2 });
-      expect(response.body.error.description).toBe("");
+      expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 1");
     });
 
     it("should permit cash to be equal to price", async () => {
@@ -195,7 +195,7 @@ describe("PATCH /sale", () => {
     beforeEach(beforeEachCb);
 
     it("should return status 200 and no body", async () => {
-      const response = await request(app).delete("/sale").send({ id: 1 });
+      const response = await request(app).delete("/sale").send({ id: 1, person: 1 });
       expect(response.statusCode).toBe(204);
       expect(response.body).toEqual({});
     });

@@ -16,7 +16,7 @@ module.exports.getSales = a(
   })
 );
 
-module.exports.postNewSale = a(
+module.exports.postSale = a(
   Joi.object({
     person: Joi.number().required().custom(validIDs(personsDB)),
 
@@ -24,21 +24,19 @@ module.exports.postNewSale = a(
 
     enabled: Joi.boolean().default(true),
 
-    sales: Joi.array()
-      .min(1)
-      .required()
-      .items(
-        Joi.object({
-          product: Joi.number().custom(validIDs(productsDB)).required(),
+    product: Joi.number().custom(validIDs(productsDB)).required(),
 
-          quantity: Joi.number().min(1).integer().default(1),
+    quantity: Joi.number().min(1).integer().default(1),
 
-          specialPrice: Joi.number().positive(),
+    specialPrice: Joi.number().positive(),
 
-          cash: Joi.number()
-            .positive()
-            .default(({ product, specialPrice }) => specialPrice ?? productsDB.findOne({ $loki: product }).price),
-        })
-      ),
+    cash: Joi.number()
+      .positive()
+      .precision(2)
+      .custom((cash, { state: { ancestors }, error }) => {
+        const limit = ancestors[0].specialPrice ?? productsDB.findOne({ $loki: ancestors[0].product }).price;
+        return cash > limit ? error("number.max", { limit }) : cash;
+      })
+      .default(({ product, specialPrice }) => specialPrice ?? productsDB.findOne({ $loki: product }).price),
   })
 );
