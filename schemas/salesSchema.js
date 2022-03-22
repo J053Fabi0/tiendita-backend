@@ -4,15 +4,12 @@ const { a, validIDs, optionalArrayWithAllIDsOfDB: arrayIDs } = require("./schema
 
 module.exports.getSales = a(
   Joi.object({
-    persons: arrayIDs(personsDB).default(personsDB.find({}).map(({ $loki }) => $loki)),
-    products: arrayIDs(productsDB).default(productsDB.find({}).map(({ $loki }) => $loki)),
-    tags: Joi.array()
-      .min(1)
-      .unique()
-      .items(Joi.number().custom(validIDs(tagsDB))),
+    enabled: Joi.boolean().default(true),
     tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
     from: Joi.number().positive().integer().default(0).max(Date.now()),
-    enabled: Joi.boolean().default(true),
+    tags: arrayIDs(tagsDB).default(-1),
+    persons: arrayIDs(personsDB).default(() => personsDB.find({}).map(({ $loki }) => $loki)),
+    products: arrayIDs(productsDB).default(() => productsDB.find({}).map(({ $loki }) => $loki)),
   })
 );
 

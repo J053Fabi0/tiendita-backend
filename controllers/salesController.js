@@ -1,17 +1,33 @@
 const handleError = require("../utils/handleError");
-const { salesDB } = require("../db/collections/collections");
+const { salesDB, productsDB } = require("../db/collections/collections");
 
 const a = {};
 
-a.getSales = ({ body: { persons, products, tagsBehavior, tags, from } }, res) => {
+a.getSales = ({ body: { persons, products, tagsBehavior, tags, from, enabled } }, res) => {
   try {
     res.send({
       message: salesDB
         .chain()
-        .find({ person: { $in: persons }, product: { $in: products }, date: { $gte: from } })
+        .find({ enabled })
+        .find({ date: { $gte: from } })
+        .find({ person: { $in: persons }, product: { $in: products } })
         .simplesort("date", { desc: true }) // los más recientes primero
         .data()
-        .map(({ meta: _, $loki: id, ...sale }) => ({ id, ...sale })),
+        .map(({ meta: _, enabled: __, $loki: id, ...sale }) => ({ id, ...sale }))
+        .filter(({ product }) => {
+          // If the tags are -1, then there shouldn't be any tag filtering at all.
+          if (tags === -1) return true;
+
+          const productTags = productsDB.findOne({ $loki: product }).tags;
+
+          if (tagsBehavior === "AND") {
+            for (const tag of tags) if (!productTags.includes(tag)) return false;
+            return true;
+          } else {
+            for (const tag of tags) if (productTags.includes(tag)) return true;
+            return false;
+          }
+        }),
     });
   } catch (e) {
     handleError(res, e);
