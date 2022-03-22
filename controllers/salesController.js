@@ -18,6 +18,15 @@ a.getSales = ({ body: { persons, products, tagsBehavior, tags, from } }, res) =>
   }
 };
 
+a.getSale = ({ body: { id } }, res) => {
+  try {
+    const { meta: _, $loki, ...data } = salesDB.findOne(id);
+    res.status(200).send({ message: { id: $loki, ...data } });
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
 a.postSale = ({ body }, res) => {
   try {
     const { $loki } = salesDB.insertOne(body);

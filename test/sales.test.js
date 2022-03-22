@@ -61,16 +61,16 @@ describe("GET /sale", () => {
 
     it("should return the sale", async () => {
       const sale = { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: true };
-      salesDB.insertOne(sale);
+      salesDB.insertOne({ ...sale });
       const response = await request(app).get("/sale").send({ id: 1 });
-      expect(response.body.message).toEqual(sale);
+      expect(response.body.message).toEqual({ ...sale, id: 1 });
     });
   });
 
   describe("when the sale doesn't exist", () => {
     it("should give an error", async () => {
       const response = await request(app).get("/sale").send({ id: 1 });
-      expect(response.body.error.description).toBe("");
+      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
     });
   });
 });
