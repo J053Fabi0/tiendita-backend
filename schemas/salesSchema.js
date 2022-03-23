@@ -15,11 +15,38 @@ module.exports.getSales = a(
 
 module.exports.getSale = a(Joi.object({ id: Joi.number().custom(validIDs(salesDB)).required() }));
 
+module.exports.patchSale = a(
+  Joi.object({
+    id: Joi.number().custom(validIDs(salesDB)).required(),
+    product: Joi.number().custom(validIDs(productsDB)),
+    person: Joi.number().custom(validIDs(personsDB)),
+    specialPrice: Joi.number().min(-1).integer(),
+    date: Joi.date().max("now").timestamp(),
+    quantity: Joi.number().min(1).integer(),
+    enabled: Joi.boolean(),
+    cash: Joi.number()
+      .positive()
+      .precision(2)
+      .custom((cash, { state: { ancestors }, error }) => {
+        const { id, specialPrice } = ancestors[0];
+        const sale = salesDB.findOne({ $loki: id });
+        let limit;
+        if (specialPrice != undefined)
+          limit = specialPrice === -1 ? productsDB.findOne({ $loki: sale.product })?.price || 0 : specialPrice;
+        else limit = sale.specialPrice ?? (productsDB.findOne({ $loki: sale.product })?.price || 0);
+        return cash > limit ? error("number.max", { limit }) : cash;
+      }),
+  }).or("person", "product", "quantity", "specialPrice", "cash", "date", "enabled")
+);
+
 module.exports.postSale = a(
   Joi.object({
     person: Joi.number().required().custom(validIDs(personsDB)),
 
-    date: Joi.number().positive().integer().default(Date.now()).max(Date.now()),
+    date: Joi.date()
+      .timestamp()
+      .max("now")
+      .default(() => Date.now()),
 
     enabled: Joi.boolean().default(true),
 

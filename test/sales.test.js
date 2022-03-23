@@ -190,27 +190,28 @@ describe("DELETE /sale", () => {
 });
 
 describe("PATCH /sale", () => {
-  describe("when de product exists", () => {
+  describe("when de sale exists", () => {
     const beforeEachCb = () => {
       personsDB.insertOne({ name: "a" });
       productsDB.insertOne({ name: "a", price: 10, stock: 1, tags: [1, 2, 3], description: "a", enabled: true });
-      salesDB.insertOne({
-        ...{ person: 2, date: 1, product: 2, quantity: 1, cash: 1, specialPrice: 1, enabled: true },
-      });
+      salesDB.insert([
+        { person: 2, date: 1, product: 2, quantity: 1, cash: 1, specialPrice: 1, enabled: true },
+        { person: 2, date: 1, product: 1, quantity: 1, cash: 1, enabled: true },
+        { person: 2, date: 1, product: 1, quantity: 1, cash: 1, specialPrice: 1, enabled: true },
+      ]);
     };
     beforeEach(beforeEachCb);
 
     it("should return status 200 and no body", async () => {
-      const response = await request(app).delete("/sale").send({ id: 1, person: 1 });
-      expect(response.statusCode).toBe(204);
+      const response = await request(app).patch("/sale").send({ id: 1, person: 1 });
+      expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({});
     });
 
-    it("should change the given values, quantity, cash, date or enabled", async () => {
+    it("should change the given values, quantity, date or enabled", async () => {
       const datas = [
-        ["cash", 2],
         ["date", 2],
-        ["quantity", 2],
+        ["quantity", 3],
         ["enabled", false],
       ];
 
@@ -219,57 +220,86 @@ describe("PATCH /sale", () => {
           .patch("/sale")
           .send({ id: 1, [key]: value });
 
-        expect(productsDB.findOne({ $loki: 1 })[key]).toEqual(value);
+        expect(salesDB.findOne({ $loki: 1 })[key]).toEqual(value);
 
         whipeData();
         beforeEachCb();
       }
     });
 
+    describe("changing cash", () => {
+      it("should not be grater than the price of the product", async () => {
+        const response = await request(app).patch("/sale").send({ id: 2, cash: 11 });
+        expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 10");
+      });
+
+      it("should not be grater than the specialPrice of the product", async () => {
+        const response = await request(app).patch("/sale").send({ id: 1, cash: 2 });
+        expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 1");
+      });
+
+      it("should not be grater than the specialPrice of the patch", async () => {
+        const response = await request(app).patch("/sale").send({ id: 1, cash: 21, specialPrice: 20 });
+        expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 20");
+      });
+
+      it("should not be grater than the price of the product when specialPrice is being deleted", async () => {
+        const response = await request(app).patch("/sale").send({ id: 3, cash: 11, specialPrice: -1 });
+        expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 10");
+      });
+    });
+
     describe("changing person", () => {
       it("should change it", async () => {
-        expect(productsDB.findOne({ $loki: 1 }).person).toEqual(2);
+        expect(salesDB.findOne({ $loki: 1 }).person).toEqual(2);
         await request(app).patch("/sale").send({ id: 1, person: 1 });
-        expect(productsDB.findOne({ $loki: 1 }).person).toEqual(1);
+        expect(salesDB.findOne({ $loki: 1 }).person).toEqual(1);
       });
 
       it("should return an error if the value is not valid", async () => {
-        await request(app).patch("/sale").send({ id: 1, person: 10 });
-        expect(response.body.error.description).toBe("");
+        const response = await request(app).patch("/sale").send({ id: 1, person: 10 });
+        expect(response.body.error.description).toBe("Validation error: 'person' must be [1]");
       });
     });
 
     describe("changing product", () => {
       it("should change it", async () => {
-        expect(productsDB.findOne({ $loki: 1 }).product).toEqual(2);
+        expect(salesDB.findOne({ $loki: 1 }).product).toEqual(2);
         await request(app).patch("/sale").send({ id: 1, product: 1 });
-        expect(productsDB.findOne({ $loki: 1 }).product).toEqual(1);
+        expect(salesDB.findOne({ $loki: 1 }).product).toEqual(1);
       });
 
       it("should return an error if the value is not valid", async () => {
-        await request(app).patch("/sale").send({ id: 1, product: 10 });
-        expect(response.body.error.description).toBe("");
+        const response = await request(app).patch("/sale").send({ id: 1, product: 10 });
+        expect(response.body.error.description).toBe("Validation error: 'product' must be [1]");
       });
     });
 
     describe("changing specialPrice", () => {
       it("should change it if not -1 nor the same price as the product", async () => {
-        expect(productsDB.findOne({ $loki: 1 }).specialPrice).toEqual(1);
-        await request(app).patch("/sale").send({ id: 1, specialPrice: 100 });
-        expect(productsDB.findOne({ $loki: 1 }).specialPrice).toEqual(100);
+        expect(salesDB.findOne({ $loki: 3 }).specialPrice).toEqual(1);
+        await request(app).patch("/sale").send({ id: 3, specialPrice: 100 });
+        expect(salesDB.findOne({ $loki: 3 }).specialPrice).toEqual(100);
       });
 
       it("should delete the value if set to -1", async () => {
-        expect(productsDB.findOne({ $loki: 1 }).specialPrice).toEqual(1);
-        await request(app).patch("/sale").send({ id: 1, specialPrice: -1 });
-        expect(productsDB.findOne({ $loki: 1 }).specialPrice).not.toHaveProperty("specialPrice");
+        expect(salesDB.findOne({ $loki: 3 }).specialPrice).toEqual(1);
+        await request(app).patch("/sale").send({ id: 3, specialPrice: -1 });
+        expect(salesDB.findOne({ $loki: 3 })).not.toHaveProperty("specialPrice");
       });
 
       it("should delete the value if set to the same price as the product", async () => {
-        expect(productsDB.findOne({ $loki: 1 }).specialPrice).toEqual(1);
-        await request(app).patch("/sale").send({ id: 1, specialPrice: 10 });
-        expect(productsDB.findOne({ $loki: 1 }).specialPrice).not.toHaveProperty("specialPrice");
+        expect(salesDB.findOne({ $loki: 3 }).specialPrice).toEqual(1);
+        await request(app).patch("/sale").send({ id: 3, specialPrice: 10 });
+        expect(salesDB.findOne({ $loki: 3 })).not.toHaveProperty("specialPrice");
       });
+    });
+  });
+
+  describe("when sale doesn't exist", () => {
+    it("should give an error", async () => {
+      const response = await request(app).patch("/sale").send({ id: 1, person: 10 });
+      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
     });
   });
 });

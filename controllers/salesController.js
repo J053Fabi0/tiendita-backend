@@ -43,6 +43,26 @@ a.getSale = ({ body: { id } }, res) => {
   }
 };
 
+a.patchSale = ({ body: { id, date, specialPrice, ...newData } }, res) => {
+  try {
+    const obj = salesDB.findOne({ $loki: id });
+    const newDataKeys = Object.keys(newData);
+    for (const newDataKey of newDataKeys) obj[newDataKey] = newData[newDataKey];
+
+    if (specialPrice != undefined) {
+      if (specialPrice === -1 || specialPrice === productsDB.findOne({ $loki: obj.product }).price)
+        delete obj.specialPrice;
+      else obj.specialPrice = specialPrice;
+    }
+
+    if (date) obj.date = +date;
+
+    res.status(200).send();
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
 a.postSale = ({ body }, res) => {
   try {
     const { $loki } = salesDB.insertOne(body);

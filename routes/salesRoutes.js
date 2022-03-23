@@ -7,4 +7,6 @@ router.get("/sale", s.getSale, c.getSale);
 
 router.post("/sale", s.postSale, c.postSale);
 
+router.patch("/sale", s.patchSale, c.patchSale);
+
 module.exports = router;
