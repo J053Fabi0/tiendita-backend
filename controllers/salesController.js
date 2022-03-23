@@ -63,6 +63,15 @@ a.patchSale = ({ body: { id, date, specialPrice, ...newData } }, res) => {
   }
 };
 
+a.deleteSale = ({ body: { id } }, res) => {
+  try {
+    salesDB.findOne({ $loki: id }).enabled = false;
+    res.status(204).send();
+  } catch (e) {
+    handleError(res, e);
+  }
+};
+
 a.postSale = ({ body }, res) => {
   try {
     const { $loki } = salesDB.insertOne(body);

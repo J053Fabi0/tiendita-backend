@@ -9,4 +9,6 @@ router.post("/sale", s.postSale, c.postSale);
 
 router.patch("/sale", s.patchSale, c.patchSale);
 
+router.delete("/sale", s.deleteSale, c.deleteSale);
+
 module.exports = router;

@@ -39,6 +39,8 @@ module.exports.patchSale = a(
   }).or("person", "product", "quantity", "specialPrice", "cash", "date", "enabled")
 );
 
+module.exports.deleteSale = a(Joi.object({ id: Joi.number().custom(validIDs(salesDB)).required() }));
+
 module.exports.postSale = a(
   Joi.object({
     person: Joi.number().required().custom(validIDs(personsDB)),
