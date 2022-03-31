@@ -5,7 +5,7 @@ const { validIDs, a, optionalArrayWithAllIDsOfDB } = require("./schemaUtils");
 const name = Joi.string().min(1).max(50).trim();
 const price = Joi.number().positive().precision(2);
 const stock = Joi.number().positive().integer();
-const description = Joi.string().max(400);
+const description = Joi.string().max(400).min(0);
 
 module.exports.getProducts = a(Joi.object({ enabled: Joi.boolean().default(true) }));
 module.exports.getProduct = a(Joi.object({ id: Joi.number().custom(validIDs(productsDB)).required() }));
