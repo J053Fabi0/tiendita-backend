@@ -25,7 +25,7 @@ module.exports.patchSale = a(
     quantity: Joi.number().min(1).integer(),
     enabled: Joi.boolean(),
     cash: Joi.number()
-      .positive()
+      .min(0)
       .precision(2)
       .custom((cash, { state: { ancestors }, error }) => {
         const { id, specialPrice } = ancestors[0];
@@ -59,7 +59,7 @@ module.exports.postSale = a(
     specialPrice: Joi.number().positive(),
 
     cash: Joi.number()
-      .positive()
+      .min(0)
       .precision(2)
       .custom((cash, { state: { ancestors }, error }) => {
         const limit = ancestors[0].specialPrice ?? productsDB.findOne({ $loki: ancestors[0].product }).price;
