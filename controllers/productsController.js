@@ -1,5 +1,5 @@
 const handleError = require("../utils/handleError");
-const { tagsDB, categoriesDB, productsDB } = require("../db/collections/collections");
+const { productsDB } = require("../db/collections/collections");
 
 const a = {};
 
