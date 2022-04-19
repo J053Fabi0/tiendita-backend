@@ -6,7 +6,9 @@ const a = {};
 a.getPersons = ({ body: { enabled } }, res) => {
   try {
     res.send({
-      message: personsDB.find({ enabled }).map(({ meta: _, $loki: id, ...data }) => ({ id, ...data })),
+      message: personsDB
+        .find({ enabled })
+        .map(({ meta: _, enabled: __, $loki: id, ...data }) => ({ id, ...data })),
     });
   } catch (e) {
     handleError(res, e);
