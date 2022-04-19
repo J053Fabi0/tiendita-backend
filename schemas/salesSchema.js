@@ -6,7 +6,7 @@ module.exports.getSales = a(
   Joi.object({
     enabled: Joi.boolean().default(true),
     tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
-    from: Joi.number().positive().integer().default(0).max(Date.now()),
+    from: Joi.number().min(0).integer().default(0).max(Date.now()),
     tags: arrayIDs(tagsDB).default(-1),
     persons: arrayIDs(personsDB).default(() => personsDB.find({}).map(({ $loki }) => $loki)),
     products: arrayIDs(productsDB).default(() => productsDB.find({}).map(({ $loki }) => $loki)),
@@ -56,7 +56,7 @@ module.exports.postSale = a(
 
     quantity: Joi.number().min(1).integer().default(1),
 
-    specialPrice: Joi.number().positive(),
+    specialPrice: Joi.number().min(0),
 
     cash: Joi.number()
       .min(0)
