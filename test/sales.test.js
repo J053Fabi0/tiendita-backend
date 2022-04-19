@@ -39,6 +39,11 @@ describe("POST /sale", () => {
   });
 
   describe("when specialPrice isn't given", () => {
+    it("should not permit cash to go higher than price * quantity", async () => {
+      const response = await request(app).post("/sale").send({ person: 1, product: 1, cash: 3, quantity: 2 });
+      expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 2");
+    });
+
     it("should not permit cash to go higher than price", async () => {
       const response = await request(app).post("/sale").send({ person: 1, product: 1, cash: 2 });
       expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 1");
