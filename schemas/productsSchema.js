@@ -3,7 +3,7 @@ const { productsDB, tagsDB } = require("../db/collections/collections");
 const { validIDs, a, optionalArrayWithAllIDsOfDB } = require("./schemaUtils");
 
 const name = Joi.string().min(1).max(50).trim();
-const stock = Joi.number().positive().integer();
+const stock = Joi.number().min(0).integer();
 const description = Joi.string().max(400).min(0);
 const price = Joi.number().positive().precision(2);
 
