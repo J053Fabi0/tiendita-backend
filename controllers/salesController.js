@@ -74,7 +74,13 @@ a.deleteSale = ({ body: { id } }, res) => {
 
 a.postSale = ({ body }, res) => {
   try {
+    // Insert sale
     const { $loki } = salesDB.insertOne(body);
+
+    // Reduce stock
+    productsDB.findOne({ $loki: body.product }).stock -= body.quantity;
+
+    // Send the id of the new sale
     res.status(200).send({ message: { id: $loki } });
   } catch (e) {
     handleError(res, e);

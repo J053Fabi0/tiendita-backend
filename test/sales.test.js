@@ -23,6 +23,12 @@ describe("POST /sale", () => {
     expect(salesDB.findOne({ $loki: 1 })).toBeTruthy();
   });
 
+  it("should change the stock accordingly", async () => {
+    expect(productsDB.findOne({ $loki: 1 }).stock).toBe(1);
+    await request(app).post("/sale").send({ person: 1, product: 1 });
+    expect(productsDB.findOne({ $loki: 1 }).stock).toBe(0);
+  });
+
   describe("when specialPrice is given", () => {
     it("should not permit cash to go higher than specialPrice", async () => {
       const response = await request(app)
