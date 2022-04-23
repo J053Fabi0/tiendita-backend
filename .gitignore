@@ -1,5 +1,5 @@
-node_modules
-downloads
+dist
 Session.vim
-utils/constants.js
+node_modules
 db/database.db
+utils/constants.js
