@@ -26,8 +26,9 @@ import router from "./routes/routes";
 app.use(router);
 
 import { address } from "ip";
+const port = 3024;
 app
-  .listen(3023, () => process.env.NODE_ENV === "test" || console.log(`Server on http://${address()}:${3023}`))
+  .listen(port, () => process.env.NODE_ENV === "test" || console.log(`Server on http://${address()}:${port}`))
   .on("error", (err: any) => process.env.NODE_ENV || console.log(err));
 
 export default app;
