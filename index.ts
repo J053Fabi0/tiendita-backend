@@ -1,6 +1,13 @@
 import cors from "cors";
 import express from "express";
+import * as dotenv from "dotenv";
 import { usingCors } from "./utils/constants";
+
+if (process.env.API_SECRET === undefined && process.env.NODE_ENV !== "test")
+  console.log("API_SECRET not set in .env."), process.exit(0);
+
+dotenv.config();
+dotenv.config({ path: __dirname + "/.env" });
 
 const app = express();
 
@@ -33,9 +40,9 @@ app
 
 export default app;
 
-//////////////////////////////////////////////////////////
-//////////////////// Save database on exit ///////////////
-//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////// Save database on exit ///////////////////
+//////////////////////////////////////////////////////////////
 import db from "./db/initDatabase";
 import customDeath from "./utils/customDeath";
 

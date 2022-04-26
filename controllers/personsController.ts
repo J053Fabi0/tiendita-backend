@@ -3,6 +3,7 @@ import { personsDB } from "../db/collections/collections";
 import CommonResponse from "../types/commonResponse.type";
 import PostPerson from "../types/api/persons/postPerson.type";
 import PatchPerson from "../types/api/persons/patchPerson.type";
+import PersonsDB from "../types/collections/personsDB.type";
 
 export const getPersons = ({ body: { enabled } }: { body: { enabled: boolean } }, res: CommonResponse) => {
   try {
@@ -18,7 +19,7 @@ export const getPersons = ({ body: { enabled } }: { body: { enabled: boolean } }
 
 export const postPerson = ({ body }: { body: PostPerson }, res: CommonResponse) => {
   try {
-    res.send({ message: { id: personsDB.insertOne(body)!.$loki } });
+    res.send({ message: { id: personsDB.insertOne(body as PersonsDB)!.$loki } });
   } catch (e) {
     handleError(res, e);
   }
