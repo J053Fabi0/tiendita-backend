@@ -1,14 +1,138 @@
-import app from "..";
 import { whipeData } from "./testUtils";
-import request, { requestNoHeader } from "./request";
 import { personsDB } from "../db/collections/collections";
 import PersonsDB from "../types/collections/personsDB.type";
+import request, { requestNoAuth, requestId1, requestId2 } from "./request";
 
 beforeEach(whipeData);
 
+describe("GET signin", () => {
+  const thisRequest = () => request.get("/signin");
+
+  describe("If account exists", () => {
+    beforeEach(
+      async () =>
+        await request.post("/person").send({ password: "123456789", username: "any_username", name: "any" })
+    );
+
+    it("should return the authentication token", async () => {
+      const { body } = await thisRequest().send({ password: "123456789", username: "any_username" });
+      expect(typeof body.message).toBe("string");
+    });
+
+    it("should return error if username is invalid", async () => {
+      const { body } = await thisRequest().send({ password: "not_correct", username: "any_username" });
+      expect(body.error).toBe("Invalid data");
+    });
+
+    it("should return error if password is invalid", async () => {
+      const { body } = await thisRequest().send({ password: "123456789", username: "not_correct" });
+      expect(body.error).toBe("Invalid data");
+    });
+  });
+
+  describe("If account doesn't exist", () => {
+    it("should return error", async () => {
+      const { body } = await thisRequest().send({ password: "123456789", username: "any_username" });
+      expect(body.error).toBe("Invalid data");
+    });
+  });
+});
+
+describe("GET persons", () => {
+  beforeEach(() =>
+    personsDB.insert([
+      { role: "admin", enabled: true } as PersonsDB,
+      { role: "employee", enabled: true } as PersonsDB,
+    ])
+  );
+  const requestAdmin = () => requestId1.get("/persons");
+  const requestEmployee = () => requestId2.get("/persons");
+
+  describe("if the auth user is not an admin", () => {
+    it("should give an error", async () => {
+      const { body } = await requestEmployee().send({});
+      expect(body.error).toBe("Only for admins");
+    });
+  });
+
+  describe("if the auth user is an admin", () => {
+    describe("if the admin is disabled", () => {
+      it("should give an error", async () => {
+        personsDB.findOne({ $loki: 1 })!.enabled = false;
+        const { body } = await requestAdmin().send({});
+        expect(body.error).toBe("User disabled");
+      });
+    });
+
+    describe("if the admin is enabled", () => {
+      it("should return a list of the people", async () => {
+        const { body } = await requestAdmin().send({});
+        expect(body.message).toEqual([
+          { id: 1, role: "admin" },
+          { id: 2, role: "employee" },
+        ]);
+      });
+
+      it("the filter role should work", async () => {
+        {
+          const { body } = await requestAdmin().send({ role: "admin" });
+          expect(body.message).toEqual([{ id: 1, role: "admin" }]);
+        }
+        {
+          const { body } = await requestAdmin().send({ role: "employee" });
+          expect(body.message).toEqual([{ id: 2, role: "employee" }]);
+        }
+        {
+          const { body } = await requestAdmin().send({ role: "all" });
+          expect(body.message).toEqual([
+            { id: 1, role: "admin" },
+            { id: 2, role: "employee" },
+          ]);
+        }
+      });
+
+      it("the filter enabled should work", async () => {
+        personsDB.insert([
+          { role: "admin", enabled: false } as PersonsDB,
+          { role: "employee", enabled: false } as PersonsDB,
+        ]);
+        {
+          const { body } = await requestAdmin().send({ enabled: false });
+          expect(body.message).toEqual([
+            { id: 3, role: "admin" },
+            { id: 4, role: "employee" },
+          ]);
+        }
+        {
+          const { body } = await requestAdmin().send({ enabled: true });
+          expect(body.message).toEqual([
+            { id: 1, role: "admin" },
+            { id: 2, role: "employee" },
+          ]);
+        }
+      });
+
+      it("filter enabled and role should work together", async () => {
+        personsDB.insert([
+          { role: "admin", enabled: false } as PersonsDB,
+          { role: "employee", enabled: false } as PersonsDB,
+        ]);
+        {
+          const { body } = await requestAdmin().send({ enabled: false, role: "admin" });
+          expect(body.message).toEqual([{ id: 3, role: "admin" }]);
+        }
+        {
+          const { body } = await requestAdmin().send({ enabled: true, role: "employee" });
+          expect(body.message).toEqual([{ id: 2, role: "employee" }]);
+        }
+      });
+    });
+  });
+});
+
 describe("POST person", () => {
   it("should permit creating a new admin if there are none in DB", async () => {
-    const response = await requestNoHeader
+    const response = await requestNoAuth
       .post("/person")
       .send({ password: "sonteraohckaoek", username: "any_username", name: "any" });
     expect(response.statusCode).toBe(200);
@@ -17,130 +141,46 @@ describe("POST person", () => {
 
   it("should not permit creating a new admin if there are already admins in DB and token is invalid", async () => {
     personsDB.insertOne({ role: "admin" } as PersonsDB);
-    const response = await requestNoHeader
+    const response = await requestNoAuth
       .post("/person")
       .send({ password: "sonteraohckaoek", username: "any_username", name: "any" });
     expect(response.statusCode).toBe(403);
     expect(response.body.error).toBe("Invalid JWT token");
   });
 
+  const thisRequest = () => request.post("/person");
+
   it("should not permit using a username already taken", async () => {
     personsDB.insertOne({ username: "already_taken" } as PersonsDB);
-    const response = await request
-      .post("/person")
-      .send({ password: "sonteraohckaoek", username: "already_taken", name: "any" });
+    const response = await thisRequest().send({ password: "123456789", username: "already_taken", name: "any" });
     expect(response.statusCode).toBe(400);
     expect(response.body.error.description).toBe("Validation error: 'username' contains an invalid value");
   });
 
   it("should return the new id of the newly created account", async () => {
-    const response = await request
-      .post("/person")
-      .send({ password: "sonteraohckaoek", username: "already_taken", name: "any" });
+    const response = await thisRequest().send({ password: "123456789", username: "any_username", name: "any" });
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe(1);
   });
 
   it("should not save the actual password, but a hash", async () => {
-    await request.post("/person").send({ password: "sonteraohckaoek", username: "already_taken", name: "any" });
-    expect(personsDB.findOne({ $loki: 1 })!.password).not.toBe("sonteraohckaoek");
+    await thisRequest().send({ password: "123456789", username: "any_username", name: "any" });
+    expect(personsDB.findOne({ $loki: 1 })!.password).not.toBe("123456789");
   });
 
   it("should exist in the database", async () => {
-    await request.post("/person").send({ password: "123456789", username: "already_taken", name: "any" });
+    await thisRequest().send({ password: "123456789", username: "any_username", name: "any" });
     const person = personsDB.findOne({ $loki: 1 });
     expect(person).toHaveProperty("password");
     expect(person).toHaveProperty("name", "any");
     expect(person).toHaveProperty("enabled", true);
     expect(person).toHaveProperty("role", "employee");
-    expect(person).toHaveProperty("username", "already_taken");
+    expect(person).toHaveProperty("username", "any_username");
   });
 });
 
-describe("DELETE person", () => {
-  describe("if the person exists", () => {
-    beforeEach(async () => await request.post("/person").send({ name: "a" }));
-
-    it("should return 204 and no body", async () => {
-      const response = await request.delete("/person").send({ id: 1 });
-      expect(response.statusCode).toBe(204);
-      expect(response.body).toEqual({});
-    });
-
-    it("should set enabled to false", async () => {
-      expect(personsDB.findOne({ $loki: 1 })).not.toBeNull;
-      expect(personsDB.findOne({ $loki: 1 })!.enabled).toBe(true);
-      await request.delete("/person").send({ id: 1 });
-      expect(personsDB.findOne({ $loki: 1 })).not.toBeNull;
-      expect(personsDB.findOne({ $loki: 1 })!.enabled).toBe(false);
-    });
-  });
-
-  describe("if the person doesn't exist", () => {
-    it("should return an error", async () => {
-      const response = await request.delete("/person").send({ id: 1 });
-      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
-    });
-  });
-});
-
-describe("PATCH person", () => {
-  describe("if the person exists", () => {
-    it("should return a 200 status and no body", async () => {
-      await request.post("/person").send({ name: "a" });
-      const response = await request.patch("/person").send({ id: 1, name: "A" });
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toEqual({});
-    });
-
-    it("should change the values", async () => {
-      const datas = [
-        ["name", "A"],
-        ["enabled", false],
-      ] as const;
-
-      for (const [key, value] of datas) {
-        await request.post("/person").send({ name: "a", tags: ["a"] });
-
-        await request.patch("/person").send({ id: 1, [key]: value });
-
-        expect(personsDB.findOne({ $loki: 1 })?.[key]).toEqual(value);
-
-        whipeData();
-      }
-    });
-  });
-
-  describe("if person doesn't exist", () => {
-    it("should give an error", async () => {
-      const response = await request.patch("/person").send({ id: 1, name: "a" });
-      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
-    });
-  });
-});
-
-describe("GET persons", () => {
-  beforeEach(() => {
-    personsDB.insert([
-      { name: "a", enabled: true } as PersonsDB,
-      { name: "b", enabled: false } as PersonsDB, //
-    ]);
-  });
-
-  it("should specify json as the content type in the http header", async () => {
-    const response = await request.get("/persons").send();
-    expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
-  });
-
-  it("should get all the enabled products", async () => {
-    const response = await request.get("/persons").send();
-    expect(response.body.message.length).toBe(1);
-    expect(response.body.message[0].name).toBe("a");
-  });
-
-  it("should get all the disabled products, when enabled is false", async () => {
-    const response = await request.get("/persons").send({ enabled: false });
-    expect(response.body.message.length).toBe(1);
-    expect(response.body.message[0].name).toBe("b");
-  });
-});
+// describe("DELETE person", () => {
+//   // should not let you delet other's account if you are not an admin
+//   // should let you you delete your own account if you're not admin
+//   // should let you delete other's accounts if you are an admin
+// });

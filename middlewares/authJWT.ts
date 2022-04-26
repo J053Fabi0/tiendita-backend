@@ -4,47 +4,61 @@ import handleError from "../utils/handleError";
 import CommonRequest from "../types/commonRequest.type";
 import { personsDB } from "../db/collections/collections";
 import CommonResponse from "../types/commonResponse.type";
+import PersonsDB from "../types/collections/personsDB.type";
 
-const authJWT =
-  (shouldBeEnabled: boolean, permitIfNoAdmin: boolean = false) =>
+/**
+ *
+ * @param onlyAdmins If only admins can access
+ * @param permitIfNoAdmin If anyone can access in case there is no admin. Defaults to false.
+ */
+export const authJWT =
+  (onlyAdmins: boolean, permitIfNoAdmin: boolean = false) =>
   (req: CommonRequest, res: CommonResponse, next: NextFunction) => {
-    // If testing, run next()
-    if (process.env.NODE_ENV === "test" && req.headers.authorization === "testing") return next();
-
     // If there are no admins, everything is permitted to anyone
     if (permitIfNoAdmin && personsDB.count({ role: "admin" }) === 0) return next();
 
+    const { authorization } = req.headers;
+    const testing = process.env.NODE_ENV === "test" && typeof authorization === "string";
     jwt.verify(
-      req.headers.authorization || "",
+      authorization || "",
 
       process.env.API_SECRET as string, //
 
       (error, decode) => {
-        if (error) return handleError(res, "Invalid JWT token", 403);
+        // Errors on decode will be ignored if testing
+        if (error && !testing) return handleError(res, "Invalid JWT token", 403);
 
-        const person = personsDB.findOne({ $loki: (decode as jwt.JwtPayload).id });
+        // A person will always be added to the body if not testing, or if testing and authorization has the id.
+        if (!testing || (testing && authorization !== "null")) {
+          // The personID will be the id of the payload, or, if testing, the parsedInt of the authorization string
+          const personID = testing ? parseInt(authorization) : (decode as jwt.JwtPayload).id;
+          const person = personsDB.findOne({ $loki: personID });
 
-        if (!person) return handleError(res, "User not found", 404);
-        if (shouldBeEnabled && !person.enabled) return handleError(res, "User disabled", 401);
+          if (!person) return handleError(res, "User not found", 404);
+          if (onlyAdmins && person.role !== "admin") return handleError(res, "Only for admins", 401);
+          if (!person.enabled) return handleError(res, "User disabled", 401);
 
-        const { password: _, meta: __, $loki: id, ...userData } = person;
-        req.body.person = { ...userData, id };
+          const { password: _, meta: __, $loki: id, ...userData } = person;
+          req.body.person = { ...userData, id };
+        }
+
         next();
       }
     );
   };
 
 /**
- * If there are no admins, it does no authentication and permits everything.
+ * It only authenticates admins, but if there are no admins, it does no authentication and permits everything.
+ * It passes no person through the body.
  */
 export const authIfNoAdmin = authJWT(false, true);
 
 /**
- * Only permits accounts thar are enabled.
+ * Only permits accounts that are admin.
  */
-export const authJWTEnabled = authJWT(true);
+export const authJWTOnlyAdmins = authJWT(true);
 
 /**
- * Permits every kind of account, even deleted ones.
+ * Permits every role of account.
  */
-export const authJWTAll = authJWT(false);
+export const authJWTAllRoles = authJWT(false);

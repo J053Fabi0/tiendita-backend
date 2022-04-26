@@ -5,11 +5,14 @@ import PostPerson from "../types/api/persons/postPerson.type";
 import PatchPerson from "../types/api/persons/patchPerson.type";
 import PersonsDB from "../types/collections/personsDB.type";
 
-export const getPersons = ({ body: { enabled } }: { body: { enabled: boolean } }, res: CommonResponse) => {
+export const getPersons = (
+  { body: { enabled, role } }: { body: { enabled: boolean; role: "employee" | "admin" | "all" } },
+  res: CommonResponse
+) => {
   try {
     res.send({
       message: personsDB
-        .find({ enabled })
+        .find(role !== "all" ? { enabled, role } : { enabled })
         .map(({ meta: _, enabled: __, $loki: id, ...data }) => ({ id, ...data })),
     });
   } catch (e) {
