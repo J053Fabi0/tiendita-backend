@@ -20,28 +20,28 @@ const request = (id?: number) =>
   } as const);
 
 /**
- * Request with the auth header set as "null", to permit authentication but no person is defined
+ * Request with the auth header set as "null", to permit authentication but no authPerson is defined
  * into the body object when the next middleware is called.
  */
 export default request();
 
 /**
- * Request with the auth header set as "1", to permit authentication with the body.person set to whatever
+ * Request with the auth header set as "1", to permit authentication with the body.authPerson set to whatever
  * person with $loki === 1 there is.
  */
 export const requestId1 = request(1);
 /**
- * Request with the auth header set as "2", to permit authentication with the body.person set to whatever
+ * Request with the auth header set as "2", to permit authentication with the body.authPerson set to whatever
  * person with $loki === 2 there is.
  */
 export const requestId2 = request(2);
 /**
- * Request with the auth header set as "3", to permit authentication with the body.person set to whatever
+ * Request with the auth header set as "3", to permit authentication with the body.authPerson set to whatever
  * person with $loki === 3 there is.
  */
 export const requestId3 = request(3);
 /**
- * The request function that lets you set a custom ID, to permit authentication with the body.person set to whatever
+ * The request function that lets you set a custom ID, to permit authentication with the body.authPerson set to whatever
  * person with $loki === ID there is.
  */
 export const requestIdCustom = request;

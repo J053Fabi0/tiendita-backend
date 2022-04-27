@@ -48,8 +48,6 @@ export const deleteSale = a(Joi.object({ id: Joi.number().custom(validIDs(salesD
 
 export const postSale = a(
   Joi.object({
-    person: Joi.number().required().custom(validIDs(personsDB)),
-
     date: Joi.date()
       .timestamp()
       .max("now")

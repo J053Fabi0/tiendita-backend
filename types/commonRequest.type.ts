@@ -1,5 +1,6 @@
-import QueryString from "qs";
 import { Request } from "express";
+import AuthPerson from "./authPerson.type";
 
-type CommonRequest = Request<{}, any, any, QueryString.ParsedQs, Record<string, any>>;
-export default CommonRequest;
+export default interface CommonRequest<Body = any> extends Request<{}, any, Body> {
+  authPerson?: AuthPerson;
+}

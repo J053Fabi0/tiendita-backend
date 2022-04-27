@@ -7,7 +7,7 @@ import CommonResponse from "../types/commonResponse.type";
 import { salesDB, productsDB } from "../db/collections/collections";
 
 export const getSales = (
-  { body: { persons, products, tagsBehavior, tags, from, enabled } }: { body: GetSales },
+  { body: { persons, products, tagsBehavior, tags, from, enabled } }: GetSales,
   res: CommonResponse
 ) => {
   try {
@@ -81,10 +81,10 @@ export const deleteSale = ({ body: { id } }: { body: { id: number } }, res: Comm
   }
 };
 
-export const postSale = ({ body }: { body: PostSale }, res: CommonResponse) => {
+export const postSale = ({ body, authPerson }: PostSale, res: CommonResponse) => {
   try {
     // Insert sale
-    const { $loki } = salesDB.insertOne(body) as SalesDB;
+    const { $loki } = salesDB.insertOne({ person: authPerson!.id, ...body } as SalesDB) as SalesDB;
 
     // Reduce stock
     productsDB.findOne({ $loki: body.product })!.stock -= body.quantity;

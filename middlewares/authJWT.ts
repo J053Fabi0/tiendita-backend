@@ -39,7 +39,7 @@ export const authJWT =
           if (!person.enabled) return handleError(res, "User disabled", 401);
 
           const { password: _, meta: __, $loki: id, ...userData } = person;
-          req.body.person = { ...userData, id };
+          req.authPerson = { ...userData, id };
         }
 
         next();
@@ -56,9 +56,9 @@ export const authIfNoAdmin = authJWT(false, true);
 /**
  * Only permits accounts that are admin.
  */
-export const authJWTOnlyAdmins = authJWT(true);
+export const authOnlyAdmins = authJWT(true);
 
 /**
  * Permits every role of account.
  */
-export const authJWTAllRoles = authJWT(false);
+export const authAllRoles = authJWT(false);

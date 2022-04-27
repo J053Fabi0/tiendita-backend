@@ -9,5 +9,14 @@ export const whipeData = () => {
 
 export const addAdminAndEmployee = () =>
   personsDB.insert([
-    ...[{ enabled: true, role: "admin" } as PersonsDB, { enabled: true, role: "employee" } as PersonsDB],
+    ...[
+      { enabled: true, role: "admin", name: "admin", password: "admin", username: "admin" } as PersonsDB,
+      {
+        enabled: true,
+        role: "employee",
+        name: "employee",
+        password: "employee",
+        username: "employee",
+      } as PersonsDB,
+    ],
   ]);
