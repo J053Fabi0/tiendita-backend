@@ -57,22 +57,18 @@ describe("POST tag", () => {
 describe("GET tags", () => {
   beforeEach(() => {
     addAdminAndEmployee();
+    categoriesDB.insertOne({ name: "a", tags: [1] } as CategoriesDB);
     tagsDB.insertOne({ name: "a", category: 1, products: [] } as unknown as TagsDB);
   });
 
-  it("should specify json as the content type in the http header", async () => {
-    const response = await requestId1.get("/tags");
-    expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
-  });
-
   it("should have tags expanded in each category", async () => {
-    const response = await requestId1.get("/tags");
-    expect(response.body.message[0].tags[0]).toEqual({ name: "a", id: 1 });
+    const { body } = await requestId1.get("/tags");
+    expect(body.message[0].tags[0]).toEqual({ name: "a", id: 1 });
   });
 
   it("should have all categories in an array", async () => {
-    const response = await requestId1.get("/tags");
-    expect(response.body.message.length).toBe(1);
+    const { body } = await requestId1.get("/tags");
+    expect(body.message.length).toBe(1);
   });
 });
 
