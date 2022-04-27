@@ -26,7 +26,7 @@ export const getTags = (_: any, res: CommonResponse) => {
   }
 };
 
-export const postCategory = ({ body: { name, tags } }: { body: PostCategory }, res: CommonResponse) => {
+export const postCategory = ({ body: { name, tags } }: PostCategory, res: CommonResponse) => {
   try {
     const category = categoriesDB.insertOne({ name, tags: [] } as unknown as CategoriesDB) as CategoriesDB;
 
@@ -42,7 +42,7 @@ export const postCategory = ({ body: { name, tags } }: { body: PostCategory }, r
   }
 };
 
-export const postTag = ({ body }: { body: PostTag }, res: CommonResponse) => {
+export const postTag = ({ body }: PostTag, res: CommonResponse) => {
   try {
     const tagID = tagsDB.insertOne(body)!.$loki;
     const thisCategory = categoriesDB.findOne({ $loki: body.category }) as CategoriesDB;
@@ -101,7 +101,7 @@ export const deleteTag = ({ body: { id: tagID } }: { body: { id: number } }, res
   }
 };
 
-export const patchCategory = ({ body: { id, ...newData } }: { body: PatchCategory }, res: CommonResponse) => {
+export const patchCategory = ({ body: { id, ...newData } }: PatchCategory, res: CommonResponse) => {
   try {
     const obj = categoriesDB.findOne({ $loki: id });
     const newDataKeys = Object.keys(newData);
@@ -113,7 +113,7 @@ export const patchCategory = ({ body: { id, ...newData } }: { body: PatchCategor
   }
 };
 
-export const patchTag = ({ body: { id, ...newData } }: { body: PatchTag }, res: CommonResponse) => {
+export const patchTag = ({ body: { id, ...newData } }: PatchTag, res: CommonResponse) => {
   try {
     const obj = tagsDB.findOne({ $loki: id });
     const newDataKeys = Object.keys(newData);

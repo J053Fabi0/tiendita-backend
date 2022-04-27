@@ -1,5 +1,7 @@
+import CommonRequest from "../../commonRequest.type";
 import CategoriesDB from "../../collections/categoriesDB.type";
 
-export default interface PostCategory extends Omit<CategoriesDB, "tags"> {
+interface PostCategoryBody extends Omit<CategoriesDB, "tags"> {
   tags: string[];
 }
+export default interface PostCategory extends CommonRequest<PostCategoryBody> {}

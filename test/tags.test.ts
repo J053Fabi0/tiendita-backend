@@ -1,9 +1,8 @@
 import { requestId1, requestId2 } from "./request";
 import TagsDB from "../types/collections/tagsDB.type";
-import PersonsDB from "../types/collections/personsDB.type";
 import { addAdminAndEmployee, whipeData } from "./testUtils";
 import CategoriesDB from "../types/collections/categoriesDB.type";
-import { tagsDB, categoriesDB, productsDB, personsDB } from "../db/collections/collections";
+import { tagsDB, categoriesDB } from "../db/collections/collections";
 
 beforeEach(whipeData);
 
