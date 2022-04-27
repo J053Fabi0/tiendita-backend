@@ -6,7 +6,6 @@ import { usingCors } from "./utils/constants";
 if (process.env.API_SECRET === undefined && process.env.NODE_ENV !== "test")
   console.log("API_SECRET not set in .env."), process.exit(0);
 
-dotenv.config();
 dotenv.config({ path: __dirname + "/.env" });
 
 const app = express();
