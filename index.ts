@@ -1,12 +1,14 @@
+import { join } from "path";
 import cors from "cors";
 import express from "express";
 import * as dotenv from "dotenv";
 import { usingCors } from "./utils/constants";
 
+dotenv.config();
+dotenv.config({ path: join(__dirname, "..", "/.env") });
+
 if (process.env.API_SECRET === undefined && process.env.NODE_ENV !== "test")
   console.log("API_SECRET not set in .env."), process.exit(0);
-
-dotenv.config({ path: __dirname + "/.env" });
 
 const app = express();
 
