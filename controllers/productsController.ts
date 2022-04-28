@@ -5,7 +5,7 @@ import ProductsDB from "../types/collections/productsDB.type";
 import PostProduct from "../types/api/products/postProduct.type";
 import PatchProduct from "../types/api/products/patchProduct.type";
 
-export const getProducts = ({ body: { enabled } }: { body: { enabled: boolean } }, res: CommonResponse) => {
+export const getProducts = ({ query: { enabled } }: { query: { enabled: boolean } }, res: CommonResponse) => {
   try {
     res.send({
       message: productsDB.find({ enabled }).map(({ meta: _, $loki: id, ...data }) => ({ id, ...data })),
@@ -25,7 +25,7 @@ export const getProduct = ({ body: { id } }: { body: { id: number } }, res: Comm
   }
 };
 
-export const postProduct = ({ body }: { body: PostProduct }, res: CommonResponse) => {
+export const postProduct = ({ body }: PostProduct, res: CommonResponse) => {
   try {
     res.send({ message: productsDB.insertOne(body)!.$loki });
   } catch (e) {

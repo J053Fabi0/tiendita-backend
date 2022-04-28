@@ -6,7 +6,7 @@ import request, { requestNoAuth, requestId1, requestId2 } from "./request";
 beforeEach(whipeData);
 
 describe("GET signin", () => {
-  const thisRequest = () => request.get("/signin");
+  const thisRequest = (query: object) => request.get("/signin").query(query);
 
   describe("If account exists", () => {
     beforeEach(
@@ -15,24 +15,24 @@ describe("GET signin", () => {
     );
 
     it("should return the authentication token", async () => {
-      const { body } = await thisRequest().send({ password: "123456789", username: "any_username" });
+      const { body } = await thisRequest({ password: "123456789", username: "any_username" }).send();
       expect(typeof body.message).toBe("string");
     });
 
     it("should return error if username is invalid", async () => {
-      const { body } = await thisRequest().send({ password: "not_correct", username: "any_username" });
+      const { body } = await thisRequest({ password: "not_correct", username: "any_username" }).send();
       expect(body.error).toBe("Invalid data");
     });
 
     it("should return error if password is invalid", async () => {
-      const { body } = await thisRequest().send({ password: "123456789", username: "not_correct" });
+      const { body } = await thisRequest({ password: "123456789", username: "not_correct" }).send();
       expect(body.error).toBe("Invalid data");
     });
   });
 
   describe("If account doesn't exist", () => {
     it("should return error", async () => {
-      const { body } = await thisRequest().send({ password: "123456789", username: "any_username" });
+      const { body } = await thisRequest({ password: "123456789", username: "any_username" }).send();
       expect(body.error).toBe("Invalid data");
     });
   });
@@ -45,12 +45,12 @@ describe("GET persons", () => {
       { role: "employee", enabled: true } as PersonsDB,
     ])
   );
-  const requestAdmin = () => requestId1.get("/persons");
-  const requestEmployee = () => requestId2.get("/persons");
+  const requestAdmin = (query: object) => requestId1.get("/persons").query(query);
+  const requestEmployee = (query: object) => requestId2.get("/persons").query(query);
 
   describe("if the auth user is not an admin", () => {
     it("should give an error", async () => {
-      const { body } = await requestEmployee().send({});
+      const { body } = await requestEmployee({}).send();
       expect(body.error).toBe("Only for admins");
     });
   });
@@ -59,14 +59,14 @@ describe("GET persons", () => {
     describe("if the admin is disabled", () => {
       it("should give an error", async () => {
         personsDB.findOne({ $loki: 1 })!.enabled = false;
-        const { body } = await requestAdmin().send({});
+        const { body } = await requestAdmin({}).send();
         expect(body.error).toBe("User disabled");
       });
     });
 
     describe("if the admin is enabled", () => {
       it("should return a list of the people", async () => {
-        const { body } = await requestAdmin().send({});
+        const { body } = await requestAdmin({}).send();
         expect(body.message).toEqual([
           { id: 1, role: "admin" },
           { id: 2, role: "employee" },
@@ -75,15 +75,15 @@ describe("GET persons", () => {
 
       it("the filter role should work", async () => {
         {
-          const { body } = await requestAdmin().send({ role: "admin" });
+          const { body } = await requestAdmin({ role: "admin" }).send();
           expect(body.message).toEqual([{ id: 1, role: "admin" }]);
         }
         {
-          const { body } = await requestAdmin().send({ role: "employee" });
+          const { body } = await requestAdmin({ role: "employee" }).send();
           expect(body.message).toEqual([{ id: 2, role: "employee" }]);
         }
         {
-          const { body } = await requestAdmin().send({ role: "all" });
+          const { body } = await requestAdmin({ role: "all" }).send();
           expect(body.message).toEqual([
             { id: 1, role: "admin" },
             { id: 2, role: "employee" },
@@ -97,14 +97,14 @@ describe("GET persons", () => {
           { role: "employee", enabled: false } as PersonsDB,
         ]);
         {
-          const { body } = await requestAdmin().send({ enabled: false });
+          const { body } = await requestAdmin({ enabled: false }).send();
           expect(body.message).toEqual([
             { id: 3, role: "admin" },
             { id: 4, role: "employee" },
           ]);
         }
         {
-          const { body } = await requestAdmin().send({ enabled: true });
+          const { body } = await requestAdmin({ enabled: true }).send();
           expect(body.message).toEqual([
             { id: 1, role: "admin" },
             { id: 2, role: "employee" },
@@ -118,11 +118,11 @@ describe("GET persons", () => {
           { role: "employee", enabled: false } as PersonsDB,
         ]);
         {
-          const { body } = await requestAdmin().send({ enabled: false, role: "admin" });
+          const { body } = await requestAdmin({ enabled: false, role: "admin" }).send();
           expect(body.message).toEqual([{ id: 3, role: "admin" }]);
         }
         {
-          const { body } = await requestAdmin().send({ enabled: true, role: "employee" });
+          const { body } = await requestAdmin({ enabled: true, role: "employee" }).send();
           expect(body.message).toEqual([{ id: 2, role: "employee" }]);
         }
       });

@@ -1,5 +1,5 @@
-import { join } from "path";
 import cors from "cors";
+import { join } from "path";
 import express from "express";
 import * as dotenv from "dotenv";
 import { usingCors } from "./utils/constants";

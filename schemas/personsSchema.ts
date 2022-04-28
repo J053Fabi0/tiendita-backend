@@ -15,10 +15,14 @@ const username = Joi.string()
     return allUsernames.includes(username) ? error("any.invalid") : username;
   });
 
-export const getSignIn = a(Joi.object({ password: password.required(), username: Joi.string().required() }));
+export const getSignIn = a(
+  Joi.object({ password: password.required(), username: Joi.string().required() }),
+  "query"
+);
 
 export const getPersons = a(
-  Joi.object({ enabled: Joi.boolean().default(true), role: role.valid("all").default("all") })
+  Joi.object({ enabled: Joi.boolean().default(true), role: role.valid("all").default("all") }),
+  "query"
 );
 
 // sign up

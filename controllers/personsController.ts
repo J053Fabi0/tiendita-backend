@@ -4,11 +4,9 @@ import CommonResponse from "../types/commonResponse.type";
 import PostPerson from "../types/api/persons/postPerson.type";
 import PatchPerson from "../types/api/persons/patchPerson.type";
 import PersonsDB from "../types/collections/personsDB.type";
+import GetPersons from "../types/api/persons/getPersons.type";
 
-export const getPersons = (
-  { body: { enabled, role } }: { body: { enabled: boolean; role: "employee" | "admin" | "all" } },
-  res: CommonResponse
-) => {
+export const getPersons = ({ query: { enabled, role } }: GetPersons, res: CommonResponse) => {
   try {
     res.send({
       message: personsDB
@@ -20,7 +18,7 @@ export const getPersons = (
   }
 };
 
-export const postPerson = ({ body }: { body: PostPerson }, res: CommonResponse) => {
+export const postPerson = ({ body }: PostPerson, res: CommonResponse) => {
   try {
     res.send({ message: { id: personsDB.insertOne(body as PersonsDB)!.$loki } });
   } catch (e) {

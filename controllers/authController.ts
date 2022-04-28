@@ -7,10 +7,7 @@ import CommonResponse from "../types/commonResponse.type";
 import PersonsDB from "../types/collections/personsDB.type";
 import PostPerson from "../types/api/persons/postPerson.type";
 
-export const signup = (
-  { body: { role, name, username, password } }: { body: PostPerson },
-  res: CommonResponse
-) => {
+export const signup = ({ body: { role, name, username, password } }: PostPerson, res: CommonResponse) => {
   const user = personsDB.insertOne({
     ...{ role, name, enabled: true, username, password: bcrypt.hashSync(password, 10) },
   } as PersonsDB) as PersonsDB;
@@ -18,7 +15,7 @@ export const signup = (
   res.send({ message: user.$loki });
 };
 
-export const signin = ({ body: { password, username } }: { body: SignIn }, res: CommonResponse) => {
+export const signin = ({ query: { password, username } }: SignIn, res: CommonResponse) => {
   const user = personsDB.findOne({ username: username });
 
   // Either is the user doesn't exist or if the password is not valid, the error is the same.
