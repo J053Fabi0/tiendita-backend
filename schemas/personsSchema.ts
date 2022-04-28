@@ -16,7 +16,7 @@ const username = Joi.string()
   });
 
 export const getSignIn = a(
-  Joi.object({ password: password.required(), username: Joi.string().required() }),
+  Joi.object({ password: Joi.string().required(), username: Joi.string().required() }),
   "query"
 );
 
