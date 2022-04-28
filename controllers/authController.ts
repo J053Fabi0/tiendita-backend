@@ -16,7 +16,9 @@ export const signup = ({ body: { role, name, username, password } }: PostPerson,
 };
 
 export const signin = ({ query: { password, username } }: SignIn, res: CommonResponse) => {
-  const person = personsDB.findOne({ username: username });
+  console.log({ password, username });
+  const person = personsDB.findOne({ username });
+  console.log(person);
 
   // Either is the user doesn't exist or if the password is not valid, the error is the same.
   if (!person || !bcrypt.compareSync(password, person.password)) return handleError(res, "Invalid data", 401);
