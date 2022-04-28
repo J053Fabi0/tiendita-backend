@@ -53,3 +53,6 @@ customDeath(() =>
     process.exit(0);
   })
 );
+
+import { personsDB } from "./db/collections/collections";
+console.dir(personsDB.find(), { depth: 100 });

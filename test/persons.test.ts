@@ -7,33 +7,33 @@ beforeEach(whipeData);
 
 describe("GET signin", () => {
   const thisRequest = (query: object) => request.get("/signin").query(query);
+  const password = "y~8];=j6@{rJSiqZSdqOB>AUE=/W<Y.34ap$d-H'.*:=sJCm*pY\r7*YH7";
 
   describe("If account exists", () => {
     beforeEach(
-      async () =>
-        await request.post("/person").send({ password: "123456789", username: "any_username", name: "any" })
+      async () => await request.post("/person").send({ password, username: "any_username", name: "any" })
     );
 
     it("should return the authentication token", async () => {
-      const { body } = await thisRequest({ password: "123456789", username: "any_username" }).send();
+      const { body } = await thisRequest({ password, username: "any_username" }).send();
       expect(typeof body.message.authToken).toBe("string");
       expect(body.message.person).toEqual({ name: "any", username: "any_username", id: 1, role: "employee" });
     });
 
     it("should return error if username is invalid", async () => {
-      const { body } = await thisRequest({ password: "not_correct", username: "any_username" }).send();
+      const { body } = await thisRequest({ password, username: "not_correct" }).send();
       expect(body.error).toBe("Invalid data");
     });
 
     it("should return error if password is invalid", async () => {
-      const { body } = await thisRequest({ password: "123456789", username: "not_correct" }).send();
+      const { body } = await thisRequest({ password: "not_correct", username: "any_username" }).send();
       expect(body.error).toBe("Invalid data");
     });
   });
 
   describe("If account doesn't exist", () => {
     it("should return error", async () => {
-      const { body } = await thisRequest({ password: "123456789", username: "any_username" }).send();
+      const { body } = await thisRequest({ password, username: "any_username" }).send();
       expect(body.error).toBe("Invalid data");
     });
   });
