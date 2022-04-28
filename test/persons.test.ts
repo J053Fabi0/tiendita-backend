@@ -17,7 +17,7 @@ describe("GET signin", () => {
     it("should return the authentication token", async () => {
       const { body } = await thisRequest({ password: "123456789", username: "any_username" }).send();
       expect(typeof body.message.authToken).toBe("string");
-      expect(body.message.user).toEqual({ name: "any", username: "any_username", id: 1, role: "employee" });
+      expect(body.message.person).toEqual({ name: "any", username: "any_username", id: 1, role: "employee" });
     });
 
     it("should return error if username is invalid", async () => {

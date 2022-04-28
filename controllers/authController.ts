@@ -16,20 +16,20 @@ export const signup = ({ body: { role, name, username, password } }: PostPerson,
 };
 
 export const signin = ({ query: { password, username } }: SignIn, res: CommonResponse) => {
-  const user = personsDB.findOne({ username: username });
+  const person = personsDB.findOne({ username: username });
 
   // Either is the user doesn't exist or if the password is not valid, the error is the same.
-  if (!user || !bcrypt.compareSync(password, user.password)) return handleError(res, "Invalid data", 401);
+  if (!person || !bcrypt.compareSync(password, person.password)) return handleError(res, "Invalid data", 401);
 
   res.send({
     message: {
-      user: {
-        id: user.$loki,
-        name: user.name,
-        role: user.role,
-        username: user.username,
+      person: {
+        id: person.$loki,
+        name: person.name,
+        role: person.role,
+        username: person.username,
       },
-      authToken: jwt.sign({ id: user.$loki }, process.env.API_SECRET as string),
+      authToken: jwt.sign({ id: person.$loki }, process.env.API_SECRET as string),
     },
   });
 };
