@@ -53,6 +53,3 @@ customDeath(() =>
     process.exit(0);
   })
 );
-
-import { personsDB } from "./db/collections/collections";
-personsDB.clear({ removeIndices: true });
