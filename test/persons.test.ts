@@ -20,6 +20,12 @@ describe("GET signin", () => {
       expect(body.message.person).toEqual({ name: "any", username: "any_username", id: 1, role: "employee" });
     });
 
+    it("should not care about case in username", async () => {
+      const { body } = await thisRequest({ password, username: "Any_Username" }).send();
+      expect(typeof body.message.authToken).toBe("string");
+      expect(body.message.person).toEqual({ name: "any", username: "any_username", id: 1, role: "employee" });
+    });
+
     it("should return error if username is invalid", async () => {
       const { body } = await thisRequest({ password, username: "not_correct" }).send();
       expect(body.error).toBe("Invalid data");
