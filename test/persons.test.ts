@@ -7,7 +7,7 @@ beforeEach(whipeData);
 
 describe("GET signin", () => {
   const thisRequest = (query: object) => request.get("/signin").query(query);
-  const password = "y~8];=j6@{rJSiqZSdqOB>AUE=/W<Y.34ap$d-H'.*:=sJCm*pY\r7*YH7";
+  const password = "y~8];=j6@{rJSiqZSdqOB>AUE=/W<Y.34ap$d-H'.*:=sJCm*pY\\r7*YH7";
 
   describe("If account exists", () => {
     beforeEach(
