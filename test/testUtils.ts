@@ -7,6 +7,9 @@ export const whipeData = () => {
   for (const db of DBs) db.clear({ removeIndices: true });
 };
 
+/**
+ * admin will have id 1, and employee id 2.
+ */
 export const addAdminAndEmployee = () =>
   personsDB.insert([
     ...[

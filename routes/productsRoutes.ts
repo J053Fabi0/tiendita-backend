@@ -5,13 +5,13 @@ import { authAllRoles, authOnlyAdmins } from "../middlewares/authJWT";
 
 const productsRoutes = Router();
 
-// productsRoutes.get("/product", s.getProduct, c.getProduct);
+productsRoutes.get("/product", authAllRoles, s.getProduct, c.getProduct);
 productsRoutes.get("/products", authAllRoles, s.getProducts, c.getProducts);
 
 productsRoutes.post("/product", authOnlyAdmins, s.postProduct, c.postProduct);
 
-// productsRoutes.delete("/product", s.deleteProduct, c.deleteProduct);
+productsRoutes.delete("/product", authOnlyAdmins, s.deleteProduct, c.deleteProduct);
 
-// productsRoutes.patch("/product", s.patchProduct, c.patchProduct);
+productsRoutes.patch("/product", authOnlyAdmins, s.patchProduct, c.patchProduct);
 
 export default productsRoutes;

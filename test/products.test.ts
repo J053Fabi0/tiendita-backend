@@ -44,29 +44,25 @@ describe("POST product", () => {
   });
 });
 
-// describe("GET /product", () => {
-//   describe("when the product exists", () => {
-//     beforeEach(async () => await request(app).post("/product").send({ name: "a", price: 1, stock: 1 }));
+describe("GET product", () => {
+  beforeEach(addAdminAndEmployee);
 
-//     it("should specify json as the content type in the http header", async () => {
-//       const response = await request(app).get("/product").send({ id: 1 });
-//       expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
-//     });
+  describe("when the product exists", () => {
+    beforeEach(async () => await requestId1.post("/product").send({ name: "a", price: 1, stock: 1 }));
 
-//     it("it should give the product", async () => {
-//       const { message } = (await request(app).get("/product").send({ id: 1 })).body;
-//       expect(message.name).toBe("a");
-//       expect(message.price).toBe(1);
-//     });
-//   });
+    it("it should return the product", async () => {
+      const { message } = (await requestId2.get("/product").send({ id: 1 })).body;
+      expect(message).toEqual({ id: 1, name: "a", price: 1, stock: 1, enabled: true, description: "", tags: [] });
+    });
+  });
 
-//   describe("when the product doesn't exist", () => {
-//     it("it should give an error", async () => {
-//       const { error } = (await request(app).get("/product").send({ id: 1 })).body;
-//       expect(error.description).toBe("Validation error: 'id' must be one of []");
-//     });
-//   });
-// });
+  describe("when the product doesn't exist", () => {
+    it("it should return an error", async () => {
+      const { error } = (await requestId1.get("/product").send({ id: 1 })).body;
+      expect(error.description).toBe("Validation error: 'id' must be one of []");
+    });
+  });
+});
 
 describe("GET products", () => {
   beforeEach(() => {
@@ -97,122 +93,135 @@ describe("GET products", () => {
   });
 });
 
-// describe("DELETE /product", () => {
-//   describe("when the product exists", () => {
-//     beforeEach(() => productsDB.insertOne({ name: "a", enabled: true } as ProductsDB));
+describe("DELETE product", () => {
+  beforeEach(addAdminAndEmployee);
 
-//     it("should return status 204 and no body", async () => {
-//       const response = await request(app).delete("/product").send({ id: 1 });
-//       expect(response.statusCode).toBe(204);
-//       expect(response.body).toEqual({});
-//     });
+  describe("when admin", () => {
+    describe("when the product exists", () => {
+      beforeEach(() => productsDB.insertOne({ name: "a", enabled: true } as ProductsDB));
 
-//     it("should change its enabled value to false", async () => {
-//       expect(productsDB.findOne({ $loki: 1 })!.enabled).toBe(true);
-//       await request(app).delete("/product").send({ id: 1 });
-//       expect(productsDB.findOne({ $loki: 1 })!.enabled).toBe(false);
-//       await request(app).delete("/product").send({ id: 1 });
-//       expect(productsDB.findOne({ $loki: 1 })!.enabled).toBe(false);
-//     });
-//   });
+      it("should return status 204 and no body", async () => {
+        const { statusCode, body } = await requestId1.delete("/product").send({ id: 1 });
+        expect(statusCode).toBe(204);
+        expect(body).toEqual({});
+      });
 
-//   describe("when the product doesn't exist", () => {
-//     it("should give an error", async () => {
-//       const response = await request(app).delete("/product").send({ id: 1 });
-//       expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
-//     });
-//   });
-// });
+      it("should change its enabled value to false", async () => {
+        expect(productsDB.findOne({ $loki: 1 })!.enabled).toBe(true);
+        await requestId1.delete("/product").send({ id: 1 });
+        expect(productsDB.findOne({ $loki: 1 })!.enabled).toBe(false);
+        await requestId1.delete("/product").send({ id: 1 });
+        expect(productsDB.findOne({ $loki: 1 })!.enabled).toBe(false);
+      });
+    });
 
-// describe("PATCH /product", () => {
-//   describe("when de product exists", () => {
-//     const beforeEachCb = () => {
-//       productsDB.insertOne({
-//         name: "a",
-//         price: 1,
-//         stock: 1,
-//         tags: [1, 2, 3],
-//         description: "a",
-//         enabled: true,
-//       } as ProductsDB);
-//       tagsDB.insert([
-//         { name: "a" } as TagsDB,
-//         { name: "b" } as TagsDB,
-//         { name: "c" } as TagsDB,
-//         { name: "d" } as TagsDB,
-//       ]);
-//     };
-//     beforeEach(beforeEachCb);
+    describe("when the product doesn't exist", () => {
+      it("should give an error", async () => {
+        const { body } = await requestId1.delete("/product").send({ id: 1 });
+        expect(body.error.description).toBe("Validation error: 'id' must be one of []");
+      });
+    });
+  });
 
-//     it("should return status 200 and no body", async () => {
-//       const response = await request(app).delete("/product").send({ id: 1 });
-//       expect(response.statusCode).toBe(204);
-//       expect(response.body).toEqual({});
-//     });
+  describe("when not admin", () => {
+    it("should return an error", async () => {
+      const { body } = await requestId2.delete("/product").send({ id: 1 });
+      expect(body.error).toBe("Only for admins");
+    });
+  });
+});
 
-//     it("should change the given values", async () => {
-//       const datas = [
-//         ["price", 2],
-//         ["stock", 2],
-//         ["name", "b"],
-//         ["enabled", false],
-//         ["description", "b"],
-//       ] as const;
+describe("PATCH product", () => {
+  beforeEach(addAdminAndEmployee);
+  describe("when admin", () => {
+    const request = () => requestId1.patch("/product");
 
-//       for (const [key, value] of datas) {
-//         await request(app)
-//           .patch("/product")
-//           .send({ id: 1, [key]: value });
+    describe("when de product exists", () => {
+      const beforeEachCb = () => {
+        productsDB.insertOne({
+          name: "a",
+          price: 1,
+          stock: 1,
+          tags: [1, 2, 3],
+          description: "a",
+          enabled: true,
+        } as ProductsDB);
+        tagsDB.insert([
+          { name: "a" } as TagsDB,
+          { name: "b" } as TagsDB,
+          { name: "c" } as TagsDB,
+          { name: "d" } as TagsDB,
+        ]);
+      };
+      beforeEach(beforeEachCb);
 
-//         expect(productsDB.findOne({ $loki: 1 })?.[key]).toEqual(value);
+      it("should return status 200 and no body", async () => {
+        const response = await request().send({ id: 1, price: 2 });
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({});
+      });
 
-//         whipeData();
-//         beforeEachCb();
-//       }
-//     });
+      it("should change the given values", async () => {
+        const datas = [
+          ["price", 2],
+          ["stock", 2],
+          ["name", "b"],
+          ["enabled", false],
+          ["description", "b"],
+        ] as const;
 
-//     it("should deleteTags", async () => {
-//       await request(app)
-//         .patch("/product")
-//         .send({ id: 1, deleteTags: [2] });
+        for (const [key, value] of datas) {
+          const { statusCode } = await request().send({ id: 1, [key]: value });
 
-//       expect(productsDB.findOne({ $loki: 1 })!.tags).toEqual([1, 3]);
-//     });
+          expect(statusCode).toBe(200);
+          expect(productsDB.findOne({ $loki: 1 })?.[key]).toEqual(value);
 
-//     it("should give error if deleteTags aren't valid", async () => {
-//       const response = await request(app)
-//         .patch("/product")
-//         .send({ id: 1, deleteTags: [4] });
-//       expect(response.body.error.description).toBe("Validation error: 'deleteTags[0]' must be one of [1, 2, 3]");
-//     });
+          whipeData();
+          beforeEachCb();
+          addAdminAndEmployee();
+        }
+      });
 
-//     it("should addTags", async () => {
-//       await request(app)
-//         .patch("/product")
-//         .send({ id: 1, addTags: [4] });
+      it("should deleteTags", async () => {
+        await request().send({ id: 1, deleteTags: [2] });
 
-//       expect(productsDB.findOne({ $loki: 1 })!.tags).toEqual([1, 2, 3, 4]);
-//     });
+        expect(productsDB.findOne({ $loki: 1 })!.tags).toEqual([1, 3]);
+      });
 
-//     it("should give error if addTags don't exist", async () => {
-//       const response = await request(app)
-//         .patch("/product")
-//         .send({ id: 1, addTags: [5] });
-//       expect(response.body.error.description).toBe("Validation error: 'addTags[0]' must be one of [1, 2, 3, 4]");
-//     });
+      it("should give error if deleteTags aren't valid", async () => {
+        const response = await request().send({ id: 1, deleteTags: [4] });
+        expect(response.body.error.description).toBe("Validation error: 'deleteTags[0]' must be one of [1, 2, 3]");
+      });
 
-//     it("should give error if addTags are already present in product", async () => {
-//       const response = await request(app)
-//         .patch("/product")
-//         .send({ id: 1, addTags: [1] });
-//       expect(response.body.error.description).toBe("Validation error: 'addTags[0]' contains an invalid value");
-//     });
-//   });
+      it("should addTags", async () => {
+        await request().send({ id: 1, addTags: [4] });
 
-//   describe("when the product doesn't exist", () => {
-//     it("should give an error", async () => {
-//       const response = await request(app).patch("/product").send({ id: 1, name: "b" });
-//       expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
-//     });
-//   });
-// });
+        expect(productsDB.findOne({ $loki: 1 })!.tags).toEqual([1, 2, 3, 4]);
+      });
+
+      it("should give error if addTags don't exist", async () => {
+        const response = await request().send({ id: 1, addTags: [5] });
+        expect(response.body.error.description).toBe("Validation error: 'addTags[0]' must be one of [1, 2, 3, 4]");
+      });
+
+      it("should give error if addTags are already present in product", async () => {
+        const response = await request().send({ id: 1, addTags: [1] });
+        expect(response.body.error.description).toBe("Validation error: 'addTags[0]' contains an invalid value");
+      });
+    });
+
+    describe("when the product doesn't exist", () => {
+      it("should give an error", async () => {
+        const response = await request().send({ id: 1, name: "b" });
+        expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
+      });
+    });
+  });
+
+  describe("when not admin", () => {
+    it("should return an error", async () => {
+      const { body } = await requestId2.patch("/product").send({ id: 1, price: 1 });
+      expect(body.error).toBe("Only for admins");
+    });
+  });
+});
