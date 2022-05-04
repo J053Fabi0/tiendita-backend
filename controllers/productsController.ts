@@ -15,7 +15,7 @@ export const getProducts = ({ query: { enabled } }: { query: { enabled: boolean 
   }
 };
 
-export const getProduct = ({ body: { id } }: { body: { id: number } }, res: CommonResponse) => {
+export const getProduct = ({ query: { id } }: { query: { id: number } }, res: CommonResponse) => {
   try {
     res.send({
       message: productsDB.find({ $loki: id }).map(({ meta: _, $loki: id, ...data }) => ({ id, ...data }))[0],

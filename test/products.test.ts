@@ -51,14 +51,14 @@ describe("GET product", () => {
     beforeEach(async () => await requestId1.post("/product").send({ name: "a", price: 1, stock: 1 }));
 
     it("it should return the product", async () => {
-      const { message } = (await requestId2.get("/product").send({ id: 1 })).body;
+      const { message } = (await requestId2.get("/product").query({ id: 1 }).send()).body;
       expect(message).toEqual({ id: 1, name: "a", price: 1, stock: 1, enabled: true, description: "", tags: [] });
     });
   });
 
   describe("when the product doesn't exist", () => {
     it("it should return an error", async () => {
-      const { error } = (await requestId1.get("/product").send({ id: 1 })).body;
+      const { error } = (await requestId1.get("/product").query({ id: 1 }).send()).body;
       expect(error.description).toBe("Validation error: 'id' must be one of []");
     });
   });

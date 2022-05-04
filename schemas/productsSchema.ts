@@ -8,7 +8,7 @@ const description = Joi.string().max(400).min(0);
 const price = Joi.number().positive().precision(2);
 
 export const getProducts = a(Joi.object({ enabled: Joi.boolean().default(true) }), "query");
-export const getProduct = a(Joi.object({ id: Joi.number().custom(validIDs(productsDB)).required() }));
+export const getProduct = a(Joi.object({ id: Joi.number().custom(validIDs(productsDB)).required() }), "query");
 
 export const postProduct = a(
   Joi.object({
