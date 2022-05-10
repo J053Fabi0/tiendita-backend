@@ -11,7 +11,8 @@ export const getSales = a(
     tags: arrayIDs(tagsDB).default(-1),
     persons: arrayIDs(personsDB).default(() => personsDB.find({}).map(({ $loki }) => $loki)),
     products: arrayIDs(productsDB).default(() => productsDB.find({}).map(({ $loki }) => $loki)),
-  })
+  }),
+  "query"
 );
 
 export const getSale = a(Joi.object({ id: Joi.number().custom(validIDs(salesDB)).required() }));

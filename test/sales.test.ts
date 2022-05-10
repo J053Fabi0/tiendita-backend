@@ -1,8 +1,10 @@
-import { requestId2 } from "./request";
+import { requestId1, requestId2 } from "./request";
+import TagsDB from "../types/collections/tagsDB.type";
 import SalesDB from "../types/collections/salesDB.type";
+import PersonsDB from "../types/collections/personsDB.type";
 import { addAdminAndEmployee, whipeData } from "./testUtils";
 import ProductsDB from "../types/collections/productsDB.type";
-import { productsDB, salesDB } from "../db/collections/collections";
+import { productsDB, salesDB, personsDB, tagsDB } from "../db/collections/collections";
 
 beforeEach(whipeData);
 
@@ -95,94 +97,82 @@ describe("POST sale", () => {
 //   });
 // });
 
-// describe("GET /sales", () => {
-//   describe("when there are sales", () => {
-//     const sale1 = { id: 1, person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2 };
-//     const sale2 = { id: 2, person: 2, date: 100, product: 2, quantity: 1, cash: 1 };
-//     const sale3 = { id: 3, person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2 };
-//     beforeEach(() => {
-//       productsDB.insert([
-//         { name: "a", tags: [] } as unknown as ProductsDB,
-//         { name: "b", tags: [1] } as ProductsDB,
-//       ]);
-//       personsDB.insert([{ name: "a" } as PersonsDB, { name: "b" } as PersonsDB]);
-//       tagsDB.insert([{ name: "a" } as TagsDB, { name: "b" } as TagsDB]);
-//       salesDB.insert([
-//         { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: true } as SalesDB,
-//         { person: 2, date: 100, product: 2, quantity: 1, cash: 1, enabled: true } as SalesDB,
-//         { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: false } as SalesDB,
-//       ]);
-//     });
+describe("GET sales", () => {
+  beforeEach(() => addAdminAndEmployee());
+  const thisRequest = (query: object = {}) => requestId1.get("/sales").query(query);
 
-//     it("should specify json as the content type in the http header", async () => {
-//       const response = await request(app).get("/sales");
-//       expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
-//     });
+  describe("when there are sales", () => {
+    const sale1 = { id: 1, person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2 };
+    const sale2 = { id: 2, person: 2, date: 100, product: 2, quantity: 1, cash: 1 };
+    const sale3 = { id: 3, person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2 };
+    beforeEach(() => {
+      productsDB.insert([
+        { name: "a", tags: [] } as unknown as ProductsDB,
+        { name: "b", tags: [1] } as ProductsDB,
+      ]);
+      personsDB.insert([{ name: "a" } as PersonsDB, { name: "b" } as PersonsDB]);
+      tagsDB.insert([{ name: "a" } as TagsDB, { name: "b" } as TagsDB]);
+      salesDB.insert([
+        { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: true } as SalesDB,
+        { person: 2, date: 100, product: 2, quantity: 1, cash: 1, enabled: true } as SalesDB,
+        { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: false } as SalesDB,
+      ]);
+    });
 
-//     it("should return the array of sales available by default", async () => {
-//       const response = await request(app).get("/sales");
-//       expect(response.body.message).toEqual([sale2, sale1]);
-//     });
+    it("should return the array of sales available by default", async () => {
+      const response = await thisRequest();
+      expect(response.body.message).toEqual([sale2, sale1]);
+    });
 
-//     it("should only return sales from person 1 that are enabled", async () => {
-//       const response = await request(app)
-//         .get("/sales")
-//         .send({ persons: [1] });
-//       expect(response.body.message).toEqual([sale1]);
-//     });
+    it("should only return sales from person 1 that are enabled", async () => {
+      const response = await thisRequest({ persons: [1] });
+      expect(response.body.message).toEqual([sale1]);
+    });
 
-//     it("should only return sales from time 100 or greater that are enabled", async () => {
-//       const response = await request(app).get("/sales").send({ from: 100 });
-//       expect(response.body.message).toEqual([sale2]);
-//     });
+    it("should only return sales from time 100 or greater that are enabled", async () => {
+      const response = await thisRequest({ from: 100 });
+      expect(response.body.message).toEqual([sale2]);
+    });
 
-//     it("should only return sales from product 2 that are enabled", async () => {
-//       const response = await request(app)
-//         .get("/sales")
-//         .send({ products: [2] });
-//       expect(response.body.message).toEqual([sale2]);
-//     });
+    it("should only return sales from product 2 that are enabled", async () => {
+      const response = await thisRequest({ products: [2] });
+      expect(response.body.message).toEqual([sale2]);
+    });
 
-//     it("should only return sales that have tag 1", async () => {
-//       const response = await request(app)
-//         .get("/sales")
-//         .send({ tags: [1] });
-//       expect(response.body.message).toEqual([sale2]);
-//     });
+    it("should only return sales that have tag 1", async () => {
+      const response = await thisRequest({ tags: [1] });
+      expect(response.body.message).toEqual([sale2]);
+    });
 
-//     it("should only return sales that have tags 1 AND 2", async () => {
-//       productsDB.insertOne({ tags: [1, 2] } as ProductsDB);
-//       salesDB.insertOne({ person: 2, date: 100, product: 3, quantity: 1, cash: 1, enabled: true } as SalesDB);
-//       const response = await request(app)
-//         .get("/sales")
-//         .send({ tags: [1, 2], tagsBehavior: "AND" });
-//       expect(response.body.message).toEqual([{ id: 4, person: 2, date: 100, product: 3, quantity: 1, cash: 1 }]);
-//     });
+    it("should only return sales that have tags 1 AND 2", async () => {
+      productsDB.insertOne({ tags: [1, 2] } as ProductsDB);
+      salesDB.insertOne({ person: 2, date: 100, product: 3, quantity: 1, cash: 1, enabled: true } as SalesDB);
+      const response = await thisRequest({ tags: [1, 2], tagsBehavior: "AND" });
+      expect(response.body.message).toEqual([{ id: 4, person: 2, date: 100, product: 3, quantity: 1, cash: 1 }]);
+    });
 
-//     it("should only return sales that have tags 1 OR 2", async () => {
-//       salesDB.insertOne({ person: 2, date: 100, product: 2, quantity: 1, cash: 1, enabled: true } as SalesDB);
-//       const response = await request(app)
-//         .get("/sales")
-//         .send({ tags: [1, 2] });
-//       expect(response.body.message).toEqual([
-//         sale2,
-//         { id: 4, person: 2, date: 100, product: 2, quantity: 1, cash: 1 },
-//       ]);
-//     });
+    it("should only return sales that have tags 1 OR 2", async () => {
+      salesDB.insertOne({ person: 2, date: 100, product: 2, quantity: 1, cash: 1, enabled: true } as SalesDB);
+      const response = await thisRequest({ tags: [1, 2] });
+      expect(response.body.message).toEqual([
+        sale2,
+        { id: 4, person: 2, date: 100, product: 2, quantity: 1, cash: 1 },
+      ]);
+    });
 
-//     it("should only return sales that are not enabled", async () => {
-//       const response = await request(app).get("/sales").send({ enabled: false });
-//       expect(response.body.message).toEqual([sale3]);
-//     });
-//   });
+    it("should only return sales that are not enabled", async () => {
+      const response = await thisRequest({ enabled: false });
+      expect(response.body.message).toEqual([sale3]);
+    });
+  });
 
-//   describe("when there are no sales", () => {
-//     it("should return an empty array", async () => {
-//       const response = await request(app).get("/sales");
-//       expect(response.body.message).toEqual([]);
-//     });
-//   });
-// });
+  describe("when there are no sales", () => {
+    it("should return an empty array", async () => {
+      const response = await thisRequest();
+      expect(response.body.message).toEqual([]);
+    });
+  });
+});
 
 // describe("DELETE /sale", () => {
 //   describe("when the sale exists", () => {

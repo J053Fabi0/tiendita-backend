@@ -7,7 +7,7 @@ import CommonResponse from "../types/commonResponse.type";
 import { salesDB, productsDB } from "../db/collections/collections";
 
 export const getSales = (
-  { body: { persons, products, tagsBehavior, tags, from, enabled } }: GetSales,
+  { query: { persons, products, tagsBehavior, tags, from, enabled } }: GetSales,
   res: CommonResponse
 ) => {
   try {

@@ -50,6 +50,11 @@ describe("GET product", () => {
   describe("when the product exists", () => {
     beforeEach(async () => await requestId1.post("/product").send({ name: "a", price: 1, stock: 1 }));
 
+    it("it should return 200 as the status", async () => {
+      const { statusCode } = await requestId2.get("/product").query({ id: 1 }).send();
+      expect(statusCode).toBe(200);
+    });
+
     it("it should return the product", async () => {
       const { message } = (await requestId2.get("/product").query({ id: 1 }).send()).body;
       expect(message).toEqual({ id: 1, name: "a", price: 1, stock: 1, enabled: true, description: "", tags: [] });

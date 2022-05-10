@@ -17,7 +17,15 @@ export const a =
     validateRequest(req, res, next, schema, element);
 
 export const optionalArrayWithAllIDsOfDB = (db: Collection<any>) =>
-  Joi.array()
-    .min(1)
-    .unique()
-    .items(Joi.number().custom(validIDs(db)));
+  Joi.when(Joi.ref("."), {
+    is: Joi.array(),
+    then: Joi.array()
+      .min(1)
+      .unique()
+      .items(Joi.number().custom(validIDs(db))),
+
+    // If it is only one value, it will be converted to number, verified and then converted to an array
+    otherwise: Joi.number()
+      .custom(validIDs(db))
+      .custom((value) => [value]),
+  });
