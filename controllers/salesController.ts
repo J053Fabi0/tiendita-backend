@@ -19,7 +19,7 @@ export const getSales = (
         .find({ person: { $in: persons }, product: { $in: products } })
         .simplesort("date", { desc: true }) // los más recientes primero
         .data()
-        .map(({ meta: _, enabled: __, $loki: id, ...sale }) => ({ id, ...sale }))
+        .map(({ meta: _, enabled: __, $loki: id, date, ...sale }) => ({ id, date: +date, ...sale }))
         .filter(({ product }) => {
           // If the tags are -1, then there shouldn't be any tag filtering at all.
           if (tags === -1) return true;
@@ -83,8 +83,9 @@ export const deleteSale = ({ body: { id } }: { body: { id: number } }, res: Comm
 
 export const postSale = ({ body, authPerson }: PostSale, res: CommonResponse) => {
   try {
+    const { date, ...sale } = body;
     // Insert sale
-    const { $loki } = salesDB.insertOne({ person: authPerson!.id, ...body } as SalesDB) as SalesDB;
+    const { $loki } = salesDB.insertOne({ person: authPerson!.id, date: +date, ...sale } as SalesDB) as SalesDB;
 
     // Reduce stock
     productsDB.findOne({ $loki: body.product })!.stock -= body.quantity;

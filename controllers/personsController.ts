@@ -1,10 +1,10 @@
 import handleError from "../utils/handleError";
 import { personsDB } from "../db/collections/collections";
 import CommonResponse from "../types/commonResponse.type";
-import PostPerson from "../types/api/persons/postPerson.type";
-import PatchPerson from "../types/api/persons/patchPerson.type";
 import PersonsDB from "../types/collections/personsDB.type";
+import PostPerson from "../types/api/persons/postPerson.type";
 import GetPersons from "../types/api/persons/getPersons.type";
+import PatchPerson from "../types/api/persons/patchPerson.type";
 
 export const getPersons = ({ query: { enabled, role } }: GetPersons, res: CommonResponse) => {
   try {
