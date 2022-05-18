@@ -53,7 +53,3 @@ customDeath(() =>
     process.exit(0);
   })
 );
-
-import { salesDB } from "./db/collections/collections";
-salesDB.findAndRemove();
-console.dir(salesDB.find(), { depth: 100 });
