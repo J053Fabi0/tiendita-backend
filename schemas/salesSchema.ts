@@ -7,7 +7,7 @@ export const getSales = a(
   Joi.object({
     enabled: Joi.boolean().default(true),
     tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
-    from: Joi.number().min(0).integer().default(0).max(Date.now()),
+    from: Joi.date().timestamp().max("now").default(0),
     tags: arrayIDs(tagsDB).default(-1),
     persons: arrayIDs(personsDB).default(() => personsDB.find({}).map(({ $loki }) => $loki)),
     products: arrayIDs(productsDB).default(() => productsDB.find({}).map(({ $loki }) => $loki)),

@@ -15,7 +15,7 @@ export const getSales = (
       message: salesDB
         .chain()
         .find({ enabled })
-        .find({ date: { $gte: from } })
+        .find({ date: { $gte: +from } })
         .find({ person: { $in: persons }, product: { $in: products } })
         .simplesort("date", { desc: true }) // los más recientes primero
         .data()
