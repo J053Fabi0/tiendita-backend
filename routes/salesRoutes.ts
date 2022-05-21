@@ -12,6 +12,6 @@ salesRoutes.post("/sale", authAllRoles, s.postSale, c.postSale);
 
 // salesRoutes.patch("/sale", s.patchSale, c.patchSale);
 
-// salesRoutes.delete("/sale", s.deleteSale, c.deleteSale);
+salesRoutes.delete("/sale", authOnlyAdmins, s.deleteSale, c.deleteSale);
 
 export default salesRoutes;
