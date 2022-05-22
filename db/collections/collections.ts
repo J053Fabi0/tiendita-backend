@@ -12,7 +12,7 @@ import ProductsDB from "../../types/collections/productsDB.type";
 import CategoriesDB from "../../types/collections/categoriesDB.type";
 
 // Declarar las colecciones.
-const collections: { name: string; initializer: (db: Loki) => Collection<any> }[] = [
+const collectionsInits: { name: string; initializer: (db: Loki) => Collection<any> }[] = [
   { name: "tags", initializer: initTagsCollection },
   { name: "sales", initializer: initSalesCollection },
   { name: "persons", initializer: initPersonsCollection },
@@ -21,7 +21,7 @@ const collections: { name: string; initializer: (db: Loki) => Collection<any> }[
 ];
 
 // Inicializar las colleciones si no existen.
-for (const { name, initializer } of collections) if (db.getCollection(name) === null) initializer(db);
+for (const { name, initializer } of collectionsInits) if (db.getCollection(name) === null) initializer(db);
 
 // Exportarlas manualmente, para que sean visibles en los require.
 export const tagsDB = db.getCollection<TagsDB>("tags");
