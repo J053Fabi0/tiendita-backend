@@ -4,6 +4,8 @@ const initProductsCollection = (db: Loki) => {
     productsDB = db.addCollection("products", { indices: ["stock", "$loki", "enabled", "tags"] });
 
   productsDB.checkAllIndexes({ repair: true });
+
+  return productsDB;
 };
 
 export default initProductsCollection;
