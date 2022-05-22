@@ -8,7 +8,10 @@ import PatchProduct from "../types/api/products/patchProduct.type";
 export const getProducts = ({ query: { enabled } }: { query: { enabled: boolean } }, res: CommonResponse) => {
   try {
     res.send({
-      message: productsDB.find({ enabled }).map(({ meta: _, $loki: id, ...data }) => ({ id, ...data })),
+      message: productsDB
+        .find()
+        .filter((a) => a.enabled === enabled)
+        .map(({ meta: _, enabled: __, $loki: id, ...data }) => ({ id, ...data })),
     });
   } catch (e) {
     handleError(res, e);
