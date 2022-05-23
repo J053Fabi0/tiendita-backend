@@ -5,10 +5,10 @@ import { personsDB, productsDB, tagsDB, salesDB } from "../db/collections/collec
 
 export const getSales = a(
   Joi.object({
-    enabled: Joi.boolean().default(true),
-    tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
-    from: Joi.date().timestamp().default(0),
     tags: arrayIDs(tagsDB).default(-1),
+    enabled: Joi.boolean().default(true),
+    from: Joi.date().timestamp().default(0),
+    tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
     persons: arrayIDs(personsDB).default(() => personsDB.find({}).map(({ $loki }) => $loki)),
     products: arrayIDs(productsDB).default(() => productsDB.find({}).map(({ $loki }) => $loki)),
   }),
@@ -23,8 +23,8 @@ export const patchSale = a(
     product: Joi.number().custom(validIDs(productsDB)),
     person: Joi.number().custom(validIDs(personsDB)),
     specialPrice: Joi.number().min(-1).integer(),
-    date: Joi.date().max("now").timestamp(),
     quantity: Joi.number().min(1).integer(),
+    date: Joi.date().timestamp(),
     enabled: Joi.boolean(),
     cash: Joi.number()
       .min(0)
@@ -51,7 +51,6 @@ export const postSale = a(
   Joi.object({
     date: Joi.date()
       .timestamp()
-      .max("now")
       .default(() => Date.now()),
 
     enabled: Joi.boolean().default(true),
