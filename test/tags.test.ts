@@ -88,9 +88,9 @@ describe("GET tags", () => {
 //         .post("/category")
 //         .send({ name: "a", tags: ["a"] });
 
-//       expect(tagsDB.find({}).length).toBe(1);
+//       expect(tagsDB.find().length).toBe(1);
 //       await request(app).delete("/tag").send({ id: 1 });
-//       expect(tagsDB.find({}).length).toBe(0);
+//       expect(tagsDB.find().length).toBe(0);
 //     });
 
 //     it("should delete category if it was the last tag in it", async () => {
@@ -100,7 +100,7 @@ describe("GET tags", () => {
 
 //       await request(app).delete("/tag").send({ id: 1 });
 
-//       expect(categoriesDB.find({}).length).toBe(0);
+//       expect(categoriesDB.find().length).toBe(0);
 //     });
 
 //     it("should remove it from the category tags if there are more than 1 tags.", async () => {

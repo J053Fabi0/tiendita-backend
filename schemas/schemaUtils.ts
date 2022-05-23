@@ -7,7 +7,7 @@ import CommonResponse from "../types/commonResponse.type";
 export const validIDs =
   (db: Collection<any>) =>
   (id: number, { error }: Joi.CustomHelpers<any>) => {
-    const valids = db.find({}).map(({ $loki }) => $loki);
+    const valids = db.find().map(({ $loki }) => $loki);
     return valids.includes(id) ? id : error("any.only", { valids });
   };
 

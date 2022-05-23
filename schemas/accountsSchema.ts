@@ -11,7 +11,7 @@ export const postSignUp = a(
   Joi.object({
     name: name.required(),
     username: username.custom((username: string, { error }) => {
-      const allUsernames = personsDB.find({}).map((person) => person.username);
+      const allUsernames = personsDB.find().map((person) => person.username);
       return allUsernames.includes(username) ? error("any.invalid", { invalids: allUsernames }) : username;
     }),
   })

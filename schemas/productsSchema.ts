@@ -48,7 +48,7 @@ export const patchProduct = a(
           const invalids = productsDB.findOne({ $loki: state.ancestors[1].id })?.tags || [];
           if (invalids.includes(id)) return error("any.invalid", { invalids });
 
-          const valids = tagsDB.find({}).map(({ $loki }) => $loki);
+          const valids = tagsDB.find().map(({ $loki }) => $loki);
           return valids.includes(id) ? id : error("any.only", { valids });
         })
       ),

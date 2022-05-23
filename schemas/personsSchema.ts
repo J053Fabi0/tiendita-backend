@@ -11,7 +11,7 @@ const username = Joi.string()
   .max(32)
   .regex(/^(?!.*__)[a-z][a-z0-9_]*[a-z0-9]$/)
   .custom((username: string, { error }) => {
-    const allUsernames = personsDB.find({}).map((person) => person.username);
+    const allUsernames = personsDB.find().map((person) => person.username);
     return allUsernames.includes(username) ? error("any.invalid") : username;
   });
 

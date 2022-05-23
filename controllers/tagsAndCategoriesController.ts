@@ -11,7 +11,7 @@ import { tagsDB, categoriesDB, productsDB } from "../db/collections/collections"
 export const getTags = (_: any, res: CommonResponse) => {
   try {
     res.send({
-      message: categoriesDB.find({}).map(({ meta: _, $loki: id, tags, ...data }) => ({
+      message: categoriesDB.find().map(({ meta: _, $loki: id, tags, ...data }) => ({
         id,
         ...data,
 

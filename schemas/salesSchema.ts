@@ -9,8 +9,8 @@ export const getSales = a(
     enabled: Joi.boolean().default(true),
     from: Joi.date().timestamp().default(0),
     tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
-    persons: arrayIDs(personsDB).default(() => personsDB.find({}).map(({ $loki }) => $loki)),
-    products: arrayIDs(productsDB).default(() => productsDB.find({}).map(({ $loki }) => $loki)),
+    persons: arrayIDs(personsDB).default(() => personsDB.find().map(({ $loki }) => $loki)),
+    products: arrayIDs(productsDB).default(() => productsDB.find().map(({ $loki }) => $loki)),
   }),
   "query"
 );
