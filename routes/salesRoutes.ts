@@ -6,7 +6,7 @@ import { authAllRoles, authOnlyAdmins } from "../middlewares/authJWT";
 const salesRoutes = Router();
 
 salesRoutes.get("/sales", authOnlyAdmins, s.getSales, c.getSales);
-// salesRoutes.get("/sale", s.getSale, c.getSale);
+salesRoutes.get("/sale", authOnlyAdmins, s.getSale, c.getSale);
 
 salesRoutes.post("/sale", authAllRoles, s.postSale, c.postSale);
 

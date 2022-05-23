@@ -15,7 +15,7 @@ export const getSales = a(
   "query"
 );
 
-export const getSale = a(Joi.object({ id: Joi.number().custom(validIDs(salesDB)).required() }));
+export const getSale = a(Joi.object({ id: Joi.number().custom(validIDs(salesDB)).required() }), "query");
 
 export const patchSale = a(
   Joi.object({

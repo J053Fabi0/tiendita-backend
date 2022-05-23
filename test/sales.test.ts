@@ -74,31 +74,29 @@ describe("POST sale", () => {
   });
 });
 
-// describe("GET /sale", () => {
-//   describe("when the sale exists", () => {
-//     it("should specify json as the content type in the http header", async () => {
-//       const response = await request(app).get("/sale").send({ id: 1 });
-//       expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
-//     });
+describe("GET sale", () => {
+  beforeEach(addAdminAndEmployee);
+  const thisRequest = (query: object = {}) => requestId1.get("/sale").query(query);
 
-//     it("should return the sale", async () => {
-//       const sale = { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: true };
-//       salesDB.insertOne({ ...sale } as SalesDB);
-//       const response = await request(app).get("/sale").send({ id: 1 });
-//       expect(response.body.message).toEqual({ ...sale, id: 1 });
-//     });
-//   });
+  describe("when the sale exists", () => {
+    it("should return the sale", async () => {
+      const sale = { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: true };
+      salesDB.insertOne({ ...sale } as SalesDB);
+      const response = await thisRequest({ id: 1 });
+      expect(response.body.message).toEqual({ ...sale, id: 1 });
+    });
+  });
 
-//   describe("when the sale doesn't exist", () => {
-//     it("should give an error", async () => {
-//       const response = await request(app).get("/sale").send({ id: 1 });
-//       expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
-//     });
-//   });
-// });
+  describe("when the sale doesn't exist", () => {
+    it("should give an error", async () => {
+      const response = await thisRequest({ id: 1 });
+      expect(response.body.error.description).toBe("Validation error: 'id' must be one of []");
+    });
+  });
+});
 
 describe("GET sales", () => {
-  beforeEach(() => addAdminAndEmployee());
+  beforeEach(addAdminAndEmployee);
   const thisRequest = (query: object = {}) => requestId1.get("/sales").query(query);
 
   describe("when there are sales", () => {

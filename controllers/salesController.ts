@@ -40,7 +40,7 @@ export const getSales = (
   }
 };
 
-export const getSale = ({ body: { id } }: { body: { id: number } }, res: CommonResponse) => {
+export const getSale = ({ query: { id } }: { query: { id: number } }, res: CommonResponse) => {
   try {
     const { meta: _, $loki, ...data } = salesDB.findOne({ $loki: id }) as SalesDB;
     res.status(200).send({ message: { id: $loki, ...data } });
