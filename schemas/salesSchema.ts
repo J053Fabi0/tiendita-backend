@@ -37,9 +37,10 @@ export const patchSale = a(
         if (specialPrice != undefined)
           limit =
             specialPrice === -1
-              ? (productsDB.findOne({ $loki: sale.product })?.price || 0) * realQuantity
+              ? (productsDB.findOne({ $loki: sale.product.id })?.price || 0) * realQuantity
               : specialPrice;
-        else limit = sale.specialPrice ?? (productsDB.findOne({ $loki: sale.product })?.price || 0) * realQuantity;
+        else
+          limit = sale.specialPrice ?? (productsDB.findOne({ $loki: sale.product.id })?.price || 0) * realQuantity;
         return cash > limit ? error("number.max", { limit }) : cash;
       }),
   }).or("person", "product", "quantity", "specialPrice", "cash", "date", "enabled")

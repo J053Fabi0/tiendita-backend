@@ -4,7 +4,7 @@ import GetSales from "../types/api/sales/getSales.type";
 import PostSale from "../types/api/sales/postSale.type";
 import PatchSale from "../types/api/sales/patchSale.type";
 import CommonResponse from "../types/commonResponse.type";
-import { salesDB, productsDB } from "../db/collections/collections";
+import { salesDB, productsDB, personsDB } from "../db/collections/collections";
 
 export const getSales = (
   { query: { persons, products, tagsBehavior, tags, from, enabled } }: GetSales,
@@ -16,15 +16,13 @@ export const getSales = (
         .chain()
         .find({ enabled })
         .find({ date: { $gte: +from } })
-        .find({ person: { $in: persons }, product: { $in: products } })
-        .simplesort("date", { desc: true }) // los más recientes primero
-        .data()
-        .map(({ meta: _, enabled: __, $loki: id, date, ...sale }) => ({ id, date: +date, ...sale }))
-        .filter(({ product }) => {
+        .where(({ person }) => persons.includes(person.id))
+        .where(({ product }) => products.includes(product.id))
+        .where(({ product }) => {
           // If the tags are -1, then there shouldn't be any tag filtering at all.
           if (tags === -1) return true;
 
-          const productTags = productsDB.findOne({ $loki: product })!.tags;
+          const productTags = productsDB.findOne({ $loki: product.id })!.tags;
 
           if (tagsBehavior === "AND") {
             for (const tag of tags) if (!productTags.includes(tag)) return false;
@@ -33,7 +31,10 @@ export const getSales = (
             for (const tag of tags) if (productTags.includes(tag)) return true;
             return false;
           }
-        }),
+        })
+        .simplesort("date", { desc: true }) // los más recientes primero
+        .data()
+        .map(({ meta: _, enabled: __, $loki: id, date, ...sale }) => ({ id, date: +date, ...sale })),
     });
   } catch (e) {
     handleError(res, e);
@@ -59,7 +60,7 @@ export const patchSale = (
     for (const newDataKey of newDataKeys) (obj as any)[newDataKey] = (newData as any)[newDataKey];
 
     if (specialPrice != undefined) {
-      if (specialPrice === -1 || specialPrice === productsDB.findOne({ $loki: obj.product })!.price)
+      if (specialPrice === -1 || specialPrice === productsDB.findOne({ $loki: obj.product.id })!.price)
         delete obj.specialPrice;
       else obj.specialPrice = specialPrice;
     }
@@ -83,12 +84,20 @@ export const deleteSale = ({ body: { id } }: { body: { id: number } }, res: Comm
 
 export const postSale = ({ body, authPerson }: PostSale, res: CommonResponse) => {
   try {
-    const { date, ...sale } = body;
+    const { date, product: productID, ...sale } = body;
     // Insert sale
-    const { $loki } = salesDB.insertOne({ person: authPerson!.id, date: +date, ...sale } as SalesDB) as SalesDB;
+    const product = productsDB.findOne({ $loki: productID });
+    const person = personsDB.findOne({ $loki: authPerson!.id });
+
+    const { $loki } = salesDB.insertOne({
+      ...sale,
+      date: +date,
+      person: { id: person?.$loki, name: person?.name },
+      product: { id: productID, name: product?.name, price: product?.price },
+    } as SalesDB) as SalesDB;
 
     // Reduce stock
-    productsDB.findOne({ $loki: body.product })!.stock -= body.quantity;
+    product!.stock -= body.quantity;
 
     // Send the id of the new sale
     res.status(200).send({ message: { id: $loki } });

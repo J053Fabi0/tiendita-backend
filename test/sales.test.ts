@@ -12,12 +12,12 @@ describe("POST sale", () => {
   beforeEach(() => {
     addAdminAndEmployee();
     productsDB.insertOne({
-      name: "a",
       price: 1,
       stock: 1,
+      name: "a",
+      enabled: true,
       tags: [1, 2, 3],
       description: "a",
-      enabled: true,
     } as ProductsDB);
   });
   const thisRequest = () => requestId2.post("/sale");
@@ -33,7 +33,14 @@ describe("POST sale", () => {
     await thisRequest().send({ product: 1 });
     const { date, meta: _, ...sale } = salesDB.findOne({ $loki: 1 }) as SalesDB;
     expect(typeof date).toBe("number");
-    expect(sale).toEqual({ person: 2, product: 1, enabled: true, quantity: 1, cash: 1, $loki: 1 });
+    expect(sale).toEqual({
+      cash: 1,
+      $loki: 1,
+      quantity: 1,
+      enabled: true,
+      person: { id: 2, name: "employee" },
+      product: { id: 1, name: "a", price: 1 },
+    });
   });
 
   it("should change the stock accordingly", async () => {
@@ -80,10 +87,19 @@ describe("GET sale", () => {
 
   describe("when the sale exists", () => {
     it("should return the sale", async () => {
-      const sale = { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: true };
+      const sale = {
+        date: 1,
+        cash: 2,
+        quantity: 1,
+        enabled: true,
+        specialPrice: 2,
+        person: { id: 1, name: "a" },
+        product: { id: 1, name: "a", price: 1 },
+      };
       salesDB.insertOne({ ...sale } as SalesDB);
-      const response = await thisRequest({ id: 1 });
-      expect(response.body.message).toEqual({ ...sale, id: 1 });
+
+      const { body } = await thisRequest({ id: 1 });
+      expect(body.message).toEqual({ id: 1, ...sale });
     });
   });
 
@@ -100,20 +116,66 @@ describe("GET sales", () => {
   const thisRequest = (query: object = {}) => requestId1.get("/sales").query(query);
 
   describe("when there are sales", () => {
-    const sale1 = { id: 1, person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2 };
-    const sale2 = { id: 2, person: 2, date: 100, product: 2, quantity: 1, cash: 1 };
-    const sale3 = { id: 3, person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2 };
+    const sale1 = {
+      id: 1,
+      date: 1,
+      cash: 2,
+      quantity: 1,
+      specialPrice: 2,
+      person: { name: "a", id: 1 },
+      product: { name: "a", id: 1, price: 1 },
+    };
+    const sale2 = {
+      id: 2,
+      cash: 1,
+      date: 100,
+      quantity: 1,
+      person: { name: "b", id: 2 },
+      product: { name: "b", id: 2, price: 2 },
+    };
+    const sale3 = {
+      id: 3,
+      date: 1,
+      cash: 2,
+      quantity: 1,
+      specialPrice: 2,
+      person: { name: "a", id: 1 },
+      product: { name: "a", id: 1, price: 1 },
+    };
     beforeEach(() => {
       productsDB.insert([
-        { name: "a", tags: [] } as unknown as ProductsDB,
-        { name: "b", tags: [1] } as ProductsDB,
+        { name: "a", tags: [], price: 1 } as unknown as ProductsDB,
+        { name: "b", tags: [1], price: 2 } as ProductsDB,
       ]);
-      personsDB.insert([{ name: "a" } as PersonsDB, { name: "b" } as PersonsDB]);
       tagsDB.insert([{ name: "a" } as TagsDB, { name: "b" } as TagsDB]);
+      personsDB.insert([{ name: "a" } as PersonsDB, { name: "b" } as PersonsDB]);
       salesDB.insert([
-        { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: true } as SalesDB,
-        { person: 2, date: 100, product: 2, quantity: 1, cash: 1, enabled: true } as SalesDB,
-        { person: 1, date: 1, product: 1, quantity: 1, cash: 2, specialPrice: 2, enabled: false } as SalesDB,
+        {
+          date: 1,
+          cash: 2,
+          quantity: 1,
+          enabled: true,
+          specialPrice: 2,
+          person: { name: "a", id: 1 },
+          product: { name: "a", id: 1, price: 1 },
+        } as SalesDB,
+        {
+          cash: 1,
+          date: 100,
+          quantity: 1,
+          enabled: true,
+          person: { name: "b", id: 2 },
+          product: { name: "b", id: 2, price: 2 },
+        } as SalesDB,
+        {
+          date: 1,
+          cash: 2,
+          quantity: 1,
+          enabled: false,
+          specialPrice: 2,
+          person: { name: "a", id: 1 },
+          product: { name: "a", id: 1, price: 1 },
+        } as SalesDB,
       ]);
     });
 
@@ -144,17 +206,47 @@ describe("GET sales", () => {
 
     it("should only return sales that have tags 1 AND 2", async () => {
       productsDB.insertOne({ tags: [1, 2] } as ProductsDB);
-      salesDB.insertOne({ person: 2, date: 100, product: 3, quantity: 1, cash: 1, enabled: true } as SalesDB);
+      salesDB.insertOne({
+        cash: 1,
+        date: 100,
+        quantity: 1,
+        enabled: true,
+        person: { id: 2, name: "b" },
+        product: { id: 3, name: "c", price: 3 },
+      } as SalesDB);
       const response = await thisRequest({ tags: [1, 2], tagsBehavior: "AND" });
-      expect(response.body.message).toEqual([{ id: 4, person: 2, date: 100, product: 3, quantity: 1, cash: 1 }]);
+      expect(response.body.message).toEqual([
+        {
+          id: 4,
+          cash: 1,
+          date: 100,
+          quantity: 1,
+          person: { id: 2, name: "b" },
+          product: { id: 3, name: "c", price: 3 },
+        },
+      ]);
     });
 
     it("should only return sales that have tags 1 OR 2", async () => {
-      salesDB.insertOne({ person: 2, date: 100, product: 2, quantity: 1, cash: 1, enabled: true } as SalesDB);
+      salesDB.insertOne({
+        cash: 1,
+        date: 99,
+        quantity: 1,
+        enabled: true,
+        person: { id: 2, name: "b" },
+        product: { name: "b", id: 2, price: 2 },
+      } as SalesDB);
       const response = await thisRequest({ tags: [1, 2] });
       expect(response.body.message).toEqual([
-        sale2,
-        { id: 4, person: 2, date: 100, product: 2, quantity: 1, cash: 1 },
+        sale2, // the one with the greater time goes first
+        {
+          id: 4,
+          cash: 1,
+          date: 99,
+          quantity: 1,
+          person: { id: 2, name: "b" },
+          product: { name: "b", id: 2, price: 2 },
+        },
       ]);
     });
 
