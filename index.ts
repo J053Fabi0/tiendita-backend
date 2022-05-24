@@ -53,23 +53,3 @@ customDeath(() =>
     process.exit(0);
   })
 );
-
-// Temp code
-import { salesDB, personsDB, productsDB } from "./db/collections/collections";
-{
-  const sales = salesDB.find();
-  for (const sale of sales) {
-    let anyChange = false;
-    if (typeof sale.person === "number") {
-      anyChange = true;
-      const person = personsDB.findOne({ $loki: sale.person as number });
-      sale.person = { id: person!.$loki, name: person!.name };
-    }
-    if (typeof sale.product === "number") {
-      anyChange = true;
-      const product = productsDB.findOne({ $loki: sale.product as number });
-      sale.product = { id: product!.$loki, name: product!.name, price: product!.price };
-    }
-    if (anyChange) console.dir({ $loki: sale.$loki, product: sale.product, person: sale.person });
-  }
-}
