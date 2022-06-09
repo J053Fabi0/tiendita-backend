@@ -2,10 +2,10 @@ import Joi from "joi";
 import { productsDB, tagsDB } from "../db/collections/collections";
 import { validIDs, a, optionalArrayWithAllIDsOfDB } from "./schemaUtils";
 
-const name = Joi.string().min(1).max(50).trim();
 const stock = Joi.number().min(0).integer();
+const price = Joi.number().min(0).precision(2);
+const name = Joi.string().min(1).max(50).trim();
 const description = Joi.string().max(400).min(0);
-const price = Joi.number().positive().precision(2);
 
 export const getProducts = a(Joi.object({ enabled: Joi.boolean().default(true) }), "query");
 export const getProduct = a(Joi.object({ id: Joi.number().custom(validIDs(productsDB)).required() }), "query");
