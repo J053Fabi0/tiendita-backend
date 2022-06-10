@@ -4,7 +4,6 @@ import handleError from "../utils/handleError";
 import CommonRequest from "../types/commonRequest.type";
 import { personsDB } from "../db/collections/collections";
 import CommonResponse from "../types/commonResponse.type";
-import PersonsDB from "../types/collections/personsDB.type";
 
 /**
  *
