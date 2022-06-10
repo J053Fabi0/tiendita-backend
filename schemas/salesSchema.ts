@@ -55,13 +55,15 @@ export const postSale = a(
       .timestamp()
       .default(() => Date.now()),
 
-    enabled: Joi.boolean().default(true),
+    comment: Joi.string(),
 
-    product: Joi.number().custom(validIDs(productsDB)).required(),
+    specialPrice: Joi.number().min(0),
+
+    enabled: Joi.boolean().default(true),
 
     quantity: Joi.number().min(1).integer().default(1),
 
-    specialPrice: Joi.number().min(0),
+    product: Joi.number().custom(validIDs(productsDB)).required(),
 
     cash: Joi.number()
       .min(0)

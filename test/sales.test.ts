@@ -43,6 +43,22 @@ describe("POST sale", () => {
     });
   });
 
+  it("when defining a comment, should add one", async () => {
+    expect(salesDB.findOne({ $loki: 1 })).toBeFalsy();
+    await thisRequest().send({ product: 1, comment: "a" });
+    const { date, meta: _, ...sale } = salesDB.findOne({ $loki: 1 }) as SalesDB;
+    expect(typeof date).toBe("number");
+    expect(sale).toEqual({
+      cash: 1,
+      $loki: 1,
+      quantity: 1,
+      comment: "a",
+      enabled: true,
+      person: { id: 2, name: "employee" },
+      product: { id: 1, name: "a", price: 1 },
+    });
+  });
+
   it("should change the stock accordingly", async () => {
     expect(productsDB.findOne({ $loki: 1 })!.stock).toBe(1);
     await thisRequest().send({ product: 1 });
