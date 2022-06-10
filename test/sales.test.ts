@@ -194,6 +194,11 @@ describe("GET sales", () => {
       expect(response.body.message).toEqual([sale2]);
     });
 
+    it("should only return sales from time 1 or earlier that are enabled", async () => {
+      const response = await thisRequest({ until: 1 });
+      expect(response.body.message).toEqual([sale1]);
+    });
+
     it("should only return sales from product 2 that are enabled", async () => {
       const response = await thisRequest({ products: [2] });
       expect(response.body.message).toEqual([sale2]);

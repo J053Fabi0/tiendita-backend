@@ -5,6 +5,7 @@ export default interface GetSales
     null,
     {
       from: number;
+      until: number;
       enabled: boolean;
       persons: number[];
       products: number[];

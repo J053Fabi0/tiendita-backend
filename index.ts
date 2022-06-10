@@ -19,13 +19,10 @@ const whitelist = ["https://tiendita.josefabio.com"];
 app.use(
   usingCors
     ? cors({
-        origin: function (origin, callback) {
-          if (!origin || whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-          } else {
-            callback(new Error("Not allowed by CORS"));
-          }
-        },
+        origin: (origin, callback) =>
+          !origin || whitelist.indexOf(origin) !== -1
+            ? callback(null, true)
+            : callback(new Error("Not allowed by CORS")),
       })
     : cors()
 );

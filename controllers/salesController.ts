@@ -7,7 +7,7 @@ import CommonResponse from "../types/commonResponse.type";
 import { salesDB, productsDB, personsDB } from "../db/collections/collections";
 
 export const getSales = (
-  { query: { persons, products, tagsBehavior, tags, from, enabled } }: GetSales,
+  { query: { persons, products, tagsBehavior, tags, from, until, enabled } }: GetSales,
   res: CommonResponse
 ) => {
   try {
@@ -15,7 +15,7 @@ export const getSales = (
       message: salesDB
         .chain()
         .find({ enabled })
-        .find({ date: { $gte: +from } })
+        .find({ date: { $between: [+from, +until] } })
         .where(({ person }) => persons.includes(person.id))
         .where(({ product }) => products.includes(product.id))
         .where(({ product }) => {

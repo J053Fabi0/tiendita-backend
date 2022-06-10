@@ -8,6 +8,7 @@ export const getSales = a(
     tags: arrayIDs(tagsDB).default(-1),
     enabled: Joi.boolean().default(true),
     from: Joi.date().timestamp().default(0),
+    until: Joi.date().timestamp().default(Infinity),
     tagsBehavior: Joi.string().valid("AND", "OR").default("OR"),
     persons: arrayIDs(personsDB).default(() => personsDB.find().map(({ $loki }) => $loki)),
     products: arrayIDs(productsDB).default(() => productsDB.find().map(({ $loki }) => $loki)),
