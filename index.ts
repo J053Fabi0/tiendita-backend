@@ -2,7 +2,7 @@ import cors from "cors";
 import { join } from "path";
 import express from "express";
 import * as dotenv from "dotenv";
-import { usingCors, port } from "./utils/constants";
+import { usingCors, port, frontendURL } from "./utils/constants";
 
 dotenv.config();
 dotenv.config({ path: join(__dirname, "..", "/.env") });
@@ -15,7 +15,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const whitelist = ["https://tiendita.josefabio.com"];
+const whitelist = [frontendURL];
 app.use(
   usingCors
     ? cors({
