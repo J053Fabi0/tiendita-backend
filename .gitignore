@@ -2,5 +2,5 @@ dist
 Session.vim
 node_modules
 db/database.db
-utils/constants.js
+utils/constants.ts
 .env
