@@ -2,7 +2,7 @@ import cors from "cors";
 import { join } from "path";
 import express from "express";
 import * as dotenv from "dotenv";
-import { usingCors } from "./utils/constants";
+import { usingCors, port } from "./utils/constants";
 
 dotenv.config();
 dotenv.config({ path: join(__dirname, "..", "/.env") });
@@ -31,9 +31,11 @@ import router from "./routes/routes";
 app.use(router);
 
 import { address } from "ip";
-const port = 3024;
 app
-  .listen(port, () => process.env.NODE_ENV === "test" || console.log(`Server on http://${address()}:${port}`))
+  .listen(
+    port | 3024,
+    () => process.env.NODE_ENV === "test" || console.log(`Server on http://${address()}:${port | 3024}`)
+  )
   .on("error", (err: any) => process.env.NODE_ENV || console.log(err));
 
 export default app;
