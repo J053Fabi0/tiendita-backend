@@ -12,13 +12,12 @@ export const getSales = (
 ) => {
   try {
     res.send({
-      message: salesDB
-        .chain()
-        .find({ enabled })
-        .find({ date: { $between: [+from, +until] } })
-        .where(({ person }) => persons.includes(person.id))
-        .where(({ product }) => products.includes(product.id))
-        .where(({ product }) => {
+      message: (salesDB.find() as SalesDB[])
+        .filter((a) => a.enabled === enabled)
+        .filter(({ date }) => date <= +until && date >= +from)
+        .filter(({ person }) => persons.includes(person.id))
+        .filter(({ product }) => products.includes(product.id))
+        .filter(({ product }) => {
           // If the tags are -1, then there shouldn't be any tag filtering at all.
           if (tags === -1) return true;
 
@@ -32,8 +31,7 @@ export const getSales = (
             return false;
           }
         })
-        .simplesort("date", { desc: true }) // los más recientes primero
-        .data()
+        .sort((a, b) => b.date - a.date) // los más recientes primero
         .map(({ meta: _, enabled: __, $loki: id, date, ...sale }) => ({ id, date: +date, ...sale })),
     });
   } catch (e) {
