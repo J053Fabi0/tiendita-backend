@@ -12,7 +12,8 @@ export const getSales = (
 ) => {
   try {
     res.send({
-      message: (salesDB.find() as SalesDB[])
+      message: salesDB
+        .find()
         .filter((a) => a.enabled === enabled)
         .filter(({ date }) => date <= +until && date >= +from)
         .filter(({ person }) => persons.includes(person.id))

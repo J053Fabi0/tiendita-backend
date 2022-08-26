@@ -5,6 +5,7 @@ import PersonsDB from "../types/collections/personsDB.type";
 import PostPerson from "../types/api/persons/postPerson.type";
 import GetPersons from "../types/api/persons/getPersons.type";
 import PatchPerson from "../types/api/persons/patchPerson.type";
+import DeletePerson from "../types/api/persons/deletePerson.type";
 
 export const getPersons = ({ query: { enabled, role } }: GetPersons, res: CommonResponse) => {
   try {
@@ -26,10 +27,12 @@ export const postPerson = ({ body }: PostPerson, res: CommonResponse) => {
   }
 };
 
-export const deletePerson = ({ body: { id } }: { body: { id: number } }, res: CommonResponse) => {
+export const deletePerson = ({ body: { id }, authPerson }: DeletePerson, res: CommonResponse) => {
   try {
-    personsDB.findOne({ $loki: id })!.enabled = false;
-    res.status(204).send();
+    if (authPerson?.id === id || authPerson?.role === "admin") {
+      personsDB.findOne({ $loki: id })!.enabled = false;
+      res.status(204).send();
+    } else handleError(res, "Only for admins or the owner of the account", 401);
   } catch (e) {
     handleError(res, e);
   }

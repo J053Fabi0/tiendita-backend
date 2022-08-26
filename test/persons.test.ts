@@ -186,8 +186,36 @@ describe("POST person", () => {
   });
 });
 
-// describe("DELETE person", () => {
-//   // should not let you delet other's account if you are not an admin
-//   // should let you you delete your own account if you're not admin
-//   // should let you delete other's accounts if you are an admin
-// });
+describe("DELETE person", () => {
+  beforeEach(() =>
+    personsDB.insert([
+      { role: "admin", enabled: true } as PersonsDB,
+      { role: "employee", enabled: true } as PersonsDB,
+    ])
+  );
+
+  describe("if the auth user is not an admin", () => {
+    it("should give an error when trying to delete another account", async () => {
+      const { body } = await requestId2.delete("/person").send({ id: 1 });
+      expect(body.error).toBe("Only for admins or the owner of the account");
+      expect(personsDB.findOne({ $loki: 1 })?.enabled).toBe(true);
+    });
+
+    it("should permit delete its own account", async () => {
+      await requestId2.delete("/person").send({ id: 2 });
+      expect(personsDB.findOne({ $loki: 2 })?.enabled).toBe(false);
+    });
+  });
+
+  describe("if the auth user is an admin", () => {
+    it("should permit delete other's account", async () => {
+      await requestId1.delete("/person").send({ id: 2 });
+      expect(personsDB.findOne({ $loki: 2 })?.enabled).toBe(false);
+    });
+
+    it("should permit delete its own account", async () => {
+      await requestId1.delete("/person").send({ id: 1 });
+      expect(personsDB.findOne({ $loki: 1 })?.enabled).toBe(false);
+    });
+  });
+});
