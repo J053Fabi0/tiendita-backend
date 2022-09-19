@@ -16,23 +16,22 @@ const username = Joi.string()
     return allUsernames.includes(username) ? error("any.invalid") : username;
   });
 
+const telegramAuthData = Joi.object({
+  username: Joi.string(),
+  last_name: Joi.string(),
+  photo_url: Joi.string(),
+  first_name: Joi.string(),
+  id: Joi.number().required(),
+  hash: Joi.string().required(),
+  auth_date: Joi.string().required(),
+});
+
 export const getSignIn = a(
   Joi.object({ password: Joi.string().required(), username: Joi.string().required().lowercase() }),
   "query"
 );
 
-export const getSignInTelegram = a(
-  Joi.object({
-    username: Joi.string(),
-    last_name: Joi.string(),
-    photo_url: Joi.string(),
-    first_name: Joi.string(),
-    id: Joi.number().required(),
-    hash: Joi.string().required(),
-    auth_date: Joi.string().required(),
-  }),
-  "query"
-);
+export const getSignInTelegram = a(telegramAuthData, "query");
 
 export const getPersons = a(
   Joi.object({ enabled: Joi.boolean().default(true), role: role.valid("all").default("all") }),
@@ -51,6 +50,8 @@ export const postPerson = a(
 );
 
 export const deletePerson = a(Joi.object({ id: Joi.number().custom(validIDs(personsDB)).required() }));
+
+export const patchPersonsTelegramID = a(telegramAuthData);
 
 export const patchPersonsEnabled = a(
   Joi.object({ id: Joi.number().custom(validIDs(personsDB)).required(), enabled: Joi.boolean().required() })

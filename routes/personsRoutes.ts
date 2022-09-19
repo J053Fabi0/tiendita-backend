@@ -14,6 +14,6 @@ personsRoutes.post("/person", authIfNoAdmin, s.postPerson, signup);
 
 personsRoutes.delete("/person", authAllRoles, s.deletePerson, c.deletePerson);
 
-// personsRoutes.patch("/person", s.patchPerson, c.patchPerson);
+personsRoutes.patch("/personsTelegramID", authAllRoles, s.patchPersonsTelegramID, c.patchPersonsTelegramID);
 
 export default personsRoutes;
