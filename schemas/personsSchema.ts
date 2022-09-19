@@ -23,7 +23,7 @@ const telegramAuthData = Joi.object({
   first_name: Joi.string(),
   id: Joi.number().required(),
   hash: Joi.string().required(),
-  auth_date: Joi.string().required(),
+  auth_date: Joi.number().required(),
 });
 
 export const getSignIn = a(
