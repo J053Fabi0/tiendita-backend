@@ -2,6 +2,7 @@ import Joi from "joi";
 import { validIDs, a } from "./schemaUtils";
 import { personsDB } from "../db/collections/collections";
 
+const telegramID = Joi.number();
 const password = Joi.string().min(8);
 const name = Joi.string().min(1).max(30).trim();
 const role = Joi.string().valid("admin", "employee");
@@ -20,6 +21,19 @@ export const getSignIn = a(
   "query"
 );
 
+export const getSignInTelegram = a(
+  Joi.object({
+    username: Joi.string(),
+    last_name: Joi.string(),
+    photo_url: Joi.string(),
+    first_name: Joi.string(),
+    id: Joi.number().required(),
+    hash: Joi.string().required(),
+    auth_date: Joi.string().required(),
+  }),
+  "query"
+);
+
 export const getPersons = a(
   Joi.object({ enabled: Joi.boolean().default(true), role: role.valid("all").default("all") }),
   "query"
@@ -28,6 +42,7 @@ export const getPersons = a(
 // sign up
 export const postPerson = a(
   Joi.object({
+    telegramID,
     name: name.required(),
     username: username.required(),
     password: password.required(),
@@ -49,7 +64,8 @@ export const patchPerson = a(
   Joi.object({
     name,
     username,
+    telegramID,
 
     id: Joi.number().custom(validIDs(personsDB)).required(),
-  }).or("name", "username")
+  }).or("name", "username", "telegramID")
 );

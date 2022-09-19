@@ -9,6 +9,8 @@ dotenv.config({ path: join(__dirname, "..", "/.env") });
 
 if (process.env.API_SECRET === undefined && process.env.NODE_ENV !== "test")
   console.log("API_SECRET not set in .env."), process.exit(0);
+if (process.env.BOT_TOKEN === undefined && process.env.NODE_ENV !== "test")
+  console.log("BOT_TOKEN not set in .env."), process.exit(0);
 
 const app = express();
 
