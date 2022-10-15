@@ -49,6 +49,7 @@
     "on-finished": "^2.3.0",
     "parseurl": "^1.3.3",
     "path-to-regexp": "^0.1.7",
+    "pm2": "^5.2.2",
     "proxy-addr": "^2.0.7",
     "qs": "^6.9.6",
     "range-parser": "^1.2.1",
@@ -66,7 +67,11 @@
     "vary": "^1.1.2"
   },
   "scripts": {
-    "start": "npx tsc && nodemon dist/index.js",
+    "stop": "pm2 stop tiendita",
+    "status": "pm2 status tiendita",
+    "create": "npx tsc && pm2 start dist/index.js --name tiendita && pm2 stop tiendita",
+    "start": "pm2 stop tiendita && npx tsc && pm2 start dist/index.js --name tiendita --attach",
+    "dev": "npx tsc && nodemon dist/index.js",
     "test": "jest --verbose --forceExit -e ./test",
     "testWatch": "jest --watch --forceExit ./test",
     "testWatchAll": "jest --watchAll --forceExit ./test"
