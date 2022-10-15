@@ -72,6 +72,10 @@
     "create": "npx tsc && pm2 start dist/index.js --name tiendita && pm2 stop tiendita",
     "start": "pm2 stop tiendita && npx tsc && pm2 start dist/index.js --name tiendita --attach",
     "dev": "npx tsc && nodemon dist/index.js",
+    "stop-demo": "pm2 stop tienditademo",
+    "status-demo": "pm2 status tienditademo",
+    "create-demo": "npx tsc && pm2 start dist/index.js --name tienditademo && pm2 stop tienditademo",
+    "start-demo": "pm2 stop tienditademo && npx tsc && pm2 start dist/index.js --name tienditademo --attach",
     "test": "jest --verbose --forceExit -e ./test",
     "testWatch": "jest --watch --forceExit ./test",
     "testWatchAll": "jest --watchAll --forceExit ./test"
