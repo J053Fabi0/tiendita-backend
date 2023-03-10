@@ -71,6 +71,11 @@ describe("POST sale", () => {
       expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 100");
     });
 
+    it("should not permit cash to go higher than specialPrice times quantity", async () => {
+      const response = await thisRequest().send({ product: 1, specialPrice: 100, cash: 201, quantity: 2 });
+      expect(response.body.error.description).toBe("Validation error: 'cash' must be less than or equal to 200");
+    });
+
     it("should permit cash to be equal to specialPrice", async () => {
       expect(salesDB.findOne({ $loki: 1 })).toBeFalsy();
       await thisRequest().send({ product: 1, specialPrice: 100, cash: 100 });

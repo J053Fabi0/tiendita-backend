@@ -34,14 +34,15 @@ export const patchSale = a(
         const { id, specialPrice, quantity } = ancestors[0];
         const sale = salesDB.findOne({ $loki: id }) as SalesDB;
         const realQuantity = quantity ?? sale.quantity;
+        console.log(realQuantity);
         let limit;
         if (specialPrice != undefined)
           limit =
-            specialPrice === -1
-              ? (productsDB.findOne({ $loki: sale.product.id })?.price || 0) * realQuantity
-              : specialPrice;
+            (specialPrice === -1 ? productsDB.findOne({ $loki: sale.product.id })?.price || 0 : specialPrice) *
+            realQuantity;
         else
-          limit = sale.specialPrice ?? (productsDB.findOne({ $loki: sale.product.id })?.price || 0) * realQuantity;
+          limit =
+            (sale.specialPrice ?? (productsDB.findOne({ $loki: sale.product.id })?.price || 0)) * realQuantity;
         return cash > limit ? error("number.max", { limit }) : cash;
       }),
   }).or("person", "product", "quantity", "specialPrice", "cash", "date", "enabled")
@@ -70,8 +71,8 @@ export const postSale = a(
       .precision(2)
       .custom((cash, { state: { ancestors }, error }) => {
         const limit =
-          ancestors[0].specialPrice ??
-          productsDB.findOne({ $loki: ancestors[0].product })!.price * ancestors[0].quantity;
+          (ancestors[0].specialPrice ?? productsDB.findOne({ $loki: ancestors[0].product })!.price) *
+          ancestors[0].quantity;
         return cash > limit ? error("number.max", { limit }) : cash;
       })
       .default(({ product, specialPrice }) => specialPrice ?? productsDB.findOne({ $loki: product })!.price),
