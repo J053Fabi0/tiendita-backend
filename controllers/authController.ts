@@ -9,7 +9,7 @@ import PersonsDB from "../types/collections/personsDB.type";
 import PostPerson from "../types/api/persons/postPerson.type";
 import SignInTelegram from "../types/api/persons/signInTelegram.type";
 
-const TelegramAuth = new TelegramLogin(process.env.BOT_TOKEN ?? "");
+const TelegramAuth = new TelegramLogin(Deno.env.get("BOT_TOKEN") ?? "");
 
 export const signup = ({ body: { role, name, username, password } }: PostPerson, res: CommonResponse) => {
   const user = personsDB.insertOne({
@@ -34,7 +34,7 @@ export const signin = ({ query: { password, username } }: SignIn, res: CommonRes
         username: person.username,
         telegmarID: person.telegramID,
       },
-      authToken: jwt.sign({ id: person.$loki }, process.env.API_SECRET as string),
+      authToken: jwt.sign({ id: person.$loki }, Deno.env.get("API_SECRET")! as string),
     },
   });
 };
@@ -54,7 +54,7 @@ export const signinTelegram = ({ query: authTelegram }: SignInTelegram, res: Com
         username: person.username,
         telegramID: person.telegramID,
       },
-      authToken: jwt.sign({ id: person.$loki }, process.env.API_SECRET as string),
+      authToken: jwt.sign({ id: person.$loki }, Deno.env.get("API_SECRET")! as string),
     },
   });
 };

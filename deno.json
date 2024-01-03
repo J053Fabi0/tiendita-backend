@@ -1,0 +1,15 @@
+{
+  "unstable": ["bare-node-builtins", "byonm", "sloppy-imports", "unsafe-proto"],
+  "imports": {
+    "ip": "npm:ip",
+    "express": "npm:express",
+    "cors": "npm:cors",
+    "joi": "npm:joi",
+    "jsonwebtoken": "npm:jsonwebtoken",
+    "node-telegram-login": "npm:node-telegram-login",
+    "bcrypt": "npm:bcrypt",
+    "lokijs": "npm:lokijs",
+    "death": "npm:death",
+    "dotenv": "npm:dotenv"
+  }
+}

@@ -1,16 +1,21 @@
 import cors from "cors";
-import { join } from "path";
+import path from "node:path";
 import express from "express";
+import { join } from "node:path";
 import * as dotenv from "dotenv";
+import { fileURLToPath } from "node:url";
 import { usingCors, port, frontendURL } from "./utils/constants";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 dotenv.config({ path: join(__dirname, "..", "/.env") });
 
-if (process.env.API_SECRET === undefined && process.env.NODE_ENV !== "test")
-  console.log("API_SECRET not set in .env."), process.exit(0);
-if (process.env.BOT_TOKEN === undefined && process.env.NODE_ENV !== "test")
-  console.log("BOT_TOKEN not set in .env."), process.exit(0);
+if (Deno.env.get("API_SECRET")! === undefined && Deno.env.get("NODE_ENV")! !== "test")
+  console.log("API_SECRET not set in .env."), Deno.exit(0);
+if (Deno.env.get("BOT_TOKEN") === undefined && Deno.env.get("NODE_ENV")! !== "test")
+  console.log("BOT_TOKEN not set in .env."), Deno.exit(0);
 
 const app = express();
 
@@ -32,13 +37,12 @@ app.use(
 import router from "./routes/routes";
 app.use(router);
 
-import { address } from "ip";
 app
   .listen(
     port | 3024,
-    () => process.env.NODE_ENV === "test" || console.log(`Server on http://${address()}:${port | 3024}`)
+    () => Deno.env.get("NODE_ENV")! === "test" || console.log(`Server on http://localhost:${port | 3024}`)
   )
-  .on("error", (err: any) => process.env.NODE_ENV || console.log(err));
+  .on("error", (err: any) => Deno.env.get("NODE_ENV")! || console.log(err));
 
 export default app;
 
@@ -51,6 +55,6 @@ import customDeath from "./utils/customDeath";
 customDeath(() =>
   db.saveDatabase((err: any) => {
     if (err) console.error(err);
-    process.exit(0);
+    Deno.exit(0);
   })
 );

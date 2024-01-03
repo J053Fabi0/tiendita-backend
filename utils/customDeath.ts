@@ -4,7 +4,7 @@ let deathFunction: Function = () => 1;
 
 let hasAskedToStop = false;
 ON_DEATH(() => {
-  if (hasAskedToStop) return process.exit(0);
+  if (hasAskedToStop) return Deno.exit(0);
   hasAskedToStop = true;
 
   deathFunction();

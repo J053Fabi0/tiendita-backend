@@ -17,11 +17,11 @@ export const authJWT =
     if (permitIfNoAdmin && personsDB.count({ role: "admin" }) === 0) return next();
 
     const { authorization } = req.headers;
-    const testing = process.env.NODE_ENV === "test" && typeof authorization === "string";
+    const testing = Deno.env.get("NODE_ENV")! === "test" && typeof authorization === "string";
     jwt.verify(
       authorization || "",
 
-      process.env.API_SECRET as string, //
+      Deno.env.get("API_SECRET")! as string, //
 
       (error, decode) => {
         // Errors on decode will be ignored if testing

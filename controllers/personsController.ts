@@ -9,7 +9,7 @@ import PatchPerson from "../types/api/persons/patchPerson.type";
 import DeletePerson from "../types/api/persons/deletePerson.type";
 import PatchPersonsTelegramID from "../types/api/persons/patchPersonsTelegramID.type";
 
-const TelegramAuth = new TelegramLogin(process.env.BOT_TOKEN ?? "");
+const TelegramAuth = new TelegramLogin(Deno.env.get("BOT_TOKEN") ?? "");
 
 export const getPersons = ({ query: { enabled, role } }: GetPersons, res: CommonResponse) => {
   try {

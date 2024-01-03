@@ -1,3 +1,6 @@
 {
-  "breadcrumbs.enabled": false
+  "breadcrumbs.enabled": false,
+  "deno.enable": true,
+  "deno.lint": true,
+  "deno.unstable": true
 }
