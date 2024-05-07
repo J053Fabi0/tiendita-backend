@@ -1,9 +1,9 @@
-import handleError from "../utils/handleError";
-import CommonResponse from "../types/commonResponse.type";
-import { productsDB } from "../db/collections/collections";
-import ProductsDB from "../types/collections/productsDB.type";
-import PostProduct from "../types/api/products/postProduct.type";
-import PatchProduct from "../types/api/products/patchProduct.type";
+import handleError from "../utils/handleError.ts";
+import CommonResponse from "../types/commonResponse.type.ts";
+import { productsDB } from "../db/collections/collections.ts";
+import ProductsDB from "../types/collections/productsDB.type.ts";
+import PostProduct from "../types/api/products/postProduct.type.ts";
+import PatchProduct from "../types/api/products/patchProduct.type.ts";
 
 export const getProducts = ({ query: { enabled } }: { query: { enabled: boolean } }, res: CommonResponse) => {
   try {

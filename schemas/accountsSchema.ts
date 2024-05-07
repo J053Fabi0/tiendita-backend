@@ -1,6 +1,6 @@
 import Joi from "joi";
-import { validIDs, a } from "./schemaUtils";
-import { personsDB } from "../db/collections/collections";
+import { validIDs, a } from "./schemaUtils.ts";
+import { personsDB } from "../db/collections/collections.ts";
 
 const name = Joi.string().min(1).max(30).trim();
 const username = Joi.string()

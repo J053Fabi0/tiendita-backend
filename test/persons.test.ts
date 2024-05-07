@@ -1,7 +1,7 @@
-import { whipeData } from "./testUtils";
-import { personsDB } from "../db/collections/collections";
-import PersonsDB from "../types/collections/personsDB.type";
-import request, { requestNoAuth, requestId1, requestId2 } from "./request";
+import { whipeData } from "./testUtils.ts";
+import { personsDB } from "../db/collections/collections.ts";
+import PersonsDB from "../types/collections/personsDB.type.ts";
+import request, { requestNoAuth, requestId1, requestId2 } from "./request.ts";
 
 beforeEach(whipeData);
 

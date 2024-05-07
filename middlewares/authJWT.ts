@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { NextFunction } from "express";
-import handleError from "../utils/handleError";
-import CommonRequest from "../types/commonRequest.type";
-import { personsDB } from "../db/collections/collections";
-import CommonResponse from "../types/commonResponse.type";
+import handleError from "../utils/handleError.ts";
+import CommonRequest from "../types/commonRequest.type.ts";
+import { personsDB } from "../db/collections/collections.ts";
+import CommonResponse from "../types/commonResponse.type.ts";
 
 /**
  *

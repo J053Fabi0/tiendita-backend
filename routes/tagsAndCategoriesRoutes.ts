@@ -1,7 +1,7 @@
 import { Router } from "express";
-import * as s from "../schemas/tagsAndCategoriesSchema";
-import * as c from "../controllers/tagsAndCategoriesController";
-import { authAllRoles, authOnlyAdmins } from "../middlewares/authJWT";
+import * as s from "../schemas/tagsAndCategoriesSchema.ts";
+import * as c from "../controllers/tagsAndCategoriesController.ts";
+import { authAllRoles, authOnlyAdmins } from "../middlewares/authJWT.ts";
 
 const tagsAndCategoriesRoutes = Router();
 

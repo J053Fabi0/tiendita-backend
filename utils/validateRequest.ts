@@ -1,8 +1,8 @@
 import Joi from "joi";
 import { NextFunction } from "express";
-import handleError from "./handleError";
-import CommonRequest from "../types/commonRequest.type";
-import CommonResponse from "../types/commonResponse.type";
+import handleError from "./handleError.ts";
+import CommonRequest from "../types/commonRequest.type.ts";
+import CommonResponse from "../types/commonResponse.type.ts";
 
 // https://jasonwatmore.com/post/2020/07/22/nodejs-express-api-request-schema-validation-with-joi
 export default function validateRequest(

@@ -1,8 +1,8 @@
-import { requestId1, requestId2 } from "./request";
-import TagsDB from "../types/collections/tagsDB.type";
-import { addAdminAndEmployee, whipeData } from "./testUtils";
-import CategoriesDB from "../types/collections/categoriesDB.type";
-import { tagsDB, categoriesDB } from "../db/collections/collections";
+import { requestId1, requestId2 } from "./request.ts";
+import TagsDB from "../types/collections/tagsDB.type.ts";
+import { addAdminAndEmployee, whipeData } from "./testUtils.ts";
+import CategoriesDB from "../types/collections/categoriesDB.type.ts";
+import { tagsDB, categoriesDB } from "../db/collections/collections.ts";
 
 beforeEach(whipeData);
 

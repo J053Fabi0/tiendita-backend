@@ -1,10 +1,10 @@
-import handleError from "../utils/handleError";
-import SalesDB from "../types/collections/salesDB.type";
-import GetSales from "../types/api/sales/getSales.type";
-import PostSale from "../types/api/sales/postSale.type";
-import PatchSale from "../types/api/sales/patchSale.type";
-import CommonResponse from "../types/commonResponse.type";
-import { salesDB, productsDB, personsDB } from "../db/collections/collections";
+import handleError from "../utils/handleError.ts";
+import SalesDB from "../types/collections/salesDB.type.ts";
+import GetSales from "../types/api/sales/getSales.type.ts";
+import PostSale from "../types/api/sales/postSale.type.ts";
+import PatchSale from "../types/api/sales/patchSale.type.ts";
+import CommonResponse from "../types/commonResponse.type.ts";
+import { salesDB, productsDB, personsDB } from "../db/collections/collections.ts";
 
 export const getSales = (
   { query: { persons, products, tagsBehavior, tags, from, until, enabled } }: GetSales,

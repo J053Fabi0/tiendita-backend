@@ -1,6 +1,6 @@
-import { personsDB } from "../db/collections/collections";
-import PersonsDB from "../types/collections/personsDB.type";
-import * as collections from "../db/collections/collections";
+import { personsDB } from "../db/collections/collections.ts";
+import PersonsDB from "../types/collections/personsDB.type.ts";
+import * as collections from "../db/collections/collections.ts";
 
 export const whipeData = () => {
   const DBs = Object.values(collections);

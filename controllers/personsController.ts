@@ -1,13 +1,13 @@
-import handleError from "../utils/handleError";
+import handleError from "../utils/handleError.ts";
 import { TelegramLogin } from "node-telegram-login";
-import { personsDB } from "../db/collections/collections";
-import CommonResponse from "../types/commonResponse.type";
-import PersonsDB from "../types/collections/personsDB.type";
-import PostPerson from "../types/api/persons/postPerson.type";
-import GetPersons from "../types/api/persons/getPersons.type";
-import PatchPerson from "../types/api/persons/patchPerson.type";
-import DeletePerson from "../types/api/persons/deletePerson.type";
-import PatchPersonsTelegramID from "../types/api/persons/patchPersonsTelegramID.type";
+import { personsDB } from "../db/collections/collections.ts";
+import CommonResponse from "../types/commonResponse.type.ts";
+import PersonsDB from "../types/collections/personsDB.type.ts";
+import PostPerson from "../types/api/persons/postPerson.type.ts";
+import GetPersons from "../types/api/persons/getPersons.type.ts";
+import PatchPerson from "../types/api/persons/patchPerson.type.ts";
+import DeletePerson from "../types/api/persons/deletePerson.type.ts";
+import PatchPersonsTelegramID from "../types/api/persons/patchPersonsTelegramID.type.ts";
 
 const TelegramAuth = new TelegramLogin(Deno.env.get("BOT_TOKEN") ?? "");
 

@@ -1,8 +1,8 @@
 import Joi from "joi";
 import { NextFunction } from "express";
-import validateRequest from "../utils/validateRequest";
-import CommonRequest from "../types/commonRequest.type";
-import CommonResponse from "../types/commonResponse.type";
+import validateRequest from "../utils/validateRequest.ts";
+import CommonRequest from "../types/commonRequest.type.ts";
+import CommonResponse from "../types/commonResponse.type.ts";
 
 export const validIDs =
   (db: Collection<any>) =>

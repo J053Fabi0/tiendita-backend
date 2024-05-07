@@ -1,6 +1,6 @@
 import Joi from "joi";
-import { productsDB, tagsDB } from "../db/collections/collections";
-import { validIDs, a, optionalArrayWithAllIDsOfDB } from "./schemaUtils";
+import { productsDB, tagsDB } from "../db/collections/collections.ts";
+import { validIDs, a, optionalArrayWithAllIDsOfDB } from "./schemaUtils.ts";
 
 const stock = Joi.number().min(0).integer();
 const price = Joi.number().min(0).precision(2);

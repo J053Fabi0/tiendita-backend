@@ -1,7 +1,7 @@
 import { Router } from "express";
-import * as s from "../schemas/salesSchema";
-import * as c from "../controllers/salesController";
-import { authAllRoles, authOnlyAdmins } from "../middlewares/authJWT";
+import * as s from "../schemas/salesSchema.ts";
+import * as c from "../controllers/salesController.ts";
+import { authAllRoles, authOnlyAdmins } from "../middlewares/authJWT.ts";
 
 const salesRoutes = Router();
 

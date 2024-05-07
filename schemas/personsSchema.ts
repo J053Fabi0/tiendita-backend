@@ -1,6 +1,6 @@
 import Joi from "joi";
-import { validIDs, a } from "./schemaUtils";
-import { personsDB } from "../db/collections/collections";
+import { validIDs, a } from "./schemaUtils.ts";
+import { personsDB } from "../db/collections/collections.ts";
 
 const telegramID = Joi.number();
 const password = Joi.string().min(8);

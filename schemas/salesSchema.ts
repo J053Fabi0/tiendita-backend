@@ -1,7 +1,7 @@
 import Joi from "joi";
-import SalesDB from "../types/collections/salesDB.type";
-import { a, validIDs, optionalArrayWithAllIDsOfDB as arrayIDs } from "./schemaUtils";
-import { personsDB, productsDB, tagsDB, salesDB } from "../db/collections/collections";
+import SalesDB from "../types/collections/salesDB.type.ts";
+import { a, validIDs, optionalArrayWithAllIDsOfDB as arrayIDs } from "./schemaUtils.ts";
+import { personsDB, productsDB, tagsDB, salesDB } from "../db/collections/collections.ts";
 
 export const getSales = a(
   Joi.object({

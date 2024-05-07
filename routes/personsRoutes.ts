@@ -1,8 +1,8 @@
 import { Router } from "express";
-import * as s from "../schemas/personsSchema";
-import * as c from "../controllers/personsController";
-import { signup, signin, signinTelegram } from "../controllers/authController";
-import { authAllRoles, authIfNoAdmin, authOnlyAdmins } from "../middlewares/authJWT";
+import * as s from "../schemas/personsSchema.ts";
+import * as c from "../controllers/personsController.ts";
+import { signup, signin, signinTelegram } from "../controllers/authController.ts";
+import { authAllRoles, authIfNoAdmin, authOnlyAdmins } from "../middlewares/authJWT.ts";
 
 const personsRoutes = Router();
 

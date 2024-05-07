@@ -1,13 +1,13 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import handleError from "../utils/handleError";
+import handleError from "../utils/handleError.ts";
 import { TelegramLogin } from "node-telegram-login";
-import SignIn from "../types/api/persons/signIn.type";
-import { personsDB } from "../db/collections/collections";
-import CommonResponse from "../types/commonResponse.type";
-import PersonsDB from "../types/collections/personsDB.type";
-import PostPerson from "../types/api/persons/postPerson.type";
-import SignInTelegram from "../types/api/persons/signInTelegram.type";
+import SignIn from "../types/api/persons/signIn.type.ts";
+import { personsDB } from "../db/collections/collections.ts";
+import CommonResponse from "../types/commonResponse.type.ts";
+import PersonsDB from "../types/collections/personsDB.type.ts";
+import PostPerson from "../types/api/persons/postPerson.type.ts";
+import SignInTelegram from "../types/api/persons/signInTelegram.type.ts";
 
 const TelegramAuth = new TelegramLogin(Deno.env.get("BOT_TOKEN") ?? "");
 

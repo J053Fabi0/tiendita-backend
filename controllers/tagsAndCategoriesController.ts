@@ -1,12 +1,12 @@
-import handleError from "../utils/handleError";
-import TagsDB from "../types/collections/tagsDB.type";
-import CommonResponse from "../types/commonResponse.type";
-import CategoriesDB from "../types/collections/categoriesDB.type";
-import PostTag from "../types/api/tagsAndCategories/postTag.type";
-import PatchTag from "../types/api/tagsAndCategories/patchTag.type";
-import PostCategory from "../types/api/tagsAndCategories/postCategory.type";
-import PatchCategory from "../types/api/tagsAndCategories/patchCategory.type";
-import { tagsDB, categoriesDB, productsDB } from "../db/collections/collections";
+import handleError from "../utils/handleError.ts";
+import TagsDB from "../types/collections/tagsDB.type.ts";
+import CommonResponse from "../types/commonResponse.type.ts";
+import CategoriesDB from "../types/collections/categoriesDB.type.ts";
+import PostTag from "../types/api/tagsAndCategories/postTag.type.ts";
+import PatchTag from "../types/api/tagsAndCategories/patchTag.type.ts";
+import PostCategory from "../types/api/tagsAndCategories/postCategory.type.ts";
+import PatchCategory from "../types/api/tagsAndCategories/patchCategory.type.ts";
+import { tagsDB, categoriesDB, productsDB } from "../db/collections/collections.ts";
 
 export const getTags = (_: any, res: CommonResponse) => {
   try {

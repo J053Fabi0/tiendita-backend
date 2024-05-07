@@ -1,15 +1,15 @@
-import db from "../initDatabase";
-import initTagsCollection from "./initTagsCollection";
-import initSalesCollection from "./initSalesCollection";
-import initPersonsCollection from "./initPersonsCollection";
-import initProductsCollection from "./initProductsCollection";
-import initCategoriesCollection from "./initCategoriesCollection";
+import db from "../initDatabase.ts";
+import initTagsCollection from "./initTagsCollection.ts";
+import initSalesCollection from "./initSalesCollection.ts";
+import initPersonsCollection from "./initPersonsCollection.ts";
+import initProductsCollection from "./initProductsCollection.ts";
+import initCategoriesCollection from "./initCategoriesCollection.ts";
 
-import TagsDB from "../../types/collections/tagsDB.type";
-import SalesDB from "../../types/collections/salesDB.type";
-import PersonsDB from "../../types/collections/personsDB.type";
-import ProductsDB from "../../types/collections/productsDB.type";
-import CategoriesDB from "../../types/collections/categoriesDB.type";
+import TagsDB from "../../types/collections/tagsDB.type.ts";
+import SalesDB from "../../types/collections/salesDB.type.ts";
+import PersonsDB from "../../types/collections/personsDB.type.ts";
+import ProductsDB from "../../types/collections/productsDB.type.ts";
+import CategoriesDB from "../../types/collections/categoriesDB.type.ts";
 
 // Declarar las colecciones.
 const collectionsInits: { name: string; initializer: (db: Loki) => Collection<any> }[] = [

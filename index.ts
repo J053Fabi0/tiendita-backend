@@ -4,7 +4,7 @@ import express from "express";
 import { join } from "node:path";
 import * as dotenv from "dotenv";
 import { fileURLToPath } from "node:url";
-import { usingCors, port, frontendURL } from "./utils/constants";
+import { usingCors, port, frontendURL } from "./utils/constants.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,7 +34,7 @@ app.use(
     : cors()
 );
 
-import router from "./routes/routes";
+import router from "./routes/routes.ts";
 app.use(router);
 
 app
@@ -49,8 +49,8 @@ export default app;
 ////////////////////////////////////////////////////////////////
 //////////////////// Save database on exit /////////////////////
 ////////////////////////////////////////////////////////////////
-import db from "./db/initDatabase";
-import customDeath from "./utils/customDeath";
+import db from "./db/initDatabase.ts";
+import customDeath from "./utils/customDeath.ts";
 
 customDeath(() =>
   db.saveDatabase((err: any) => {

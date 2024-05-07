@@ -1,6 +1,6 @@
 import Joi from "joi";
-import { validIDs, a, optionalArrayWithAllIDsOfDB } from "./schemaUtils";
-import { categoriesDB, productsDB, tagsDB } from "../db/collections/collections";
+import { validIDs, a, optionalArrayWithAllIDsOfDB } from "./schemaUtils.ts";
+import { categoriesDB, productsDB, tagsDB } from "../db/collections/collections.ts";
 
 const name = Joi.string().min(1).max(15).trim();
 

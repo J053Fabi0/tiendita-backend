@@ -1,6 +1,6 @@
-import { requestId1, requestId2 } from "./request";
-import { addAdminAndEmployee, whipeData } from "./testUtils";
-import { tagsDB, categoriesDB } from "../db/collections/collections";
+import { requestId1, requestId2 } from "./request.ts";
+import { addAdminAndEmployee, whipeData } from "./testUtils.ts";
+import { tagsDB, categoriesDB } from "../db/collections/collections.ts";
 
 beforeEach(whipeData);
 

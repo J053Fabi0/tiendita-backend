@@ -1,10 +1,10 @@
-import { requestId1, requestId2 } from "./request";
-import TagsDB from "../types/collections/tagsDB.type";
-import SalesDB from "../types/collections/salesDB.type";
-import PersonsDB from "../types/collections/personsDB.type";
-import { addAdminAndEmployee, whipeData } from "./testUtils";
-import ProductsDB from "../types/collections/productsDB.type";
-import { productsDB, salesDB, personsDB, tagsDB } from "../db/collections/collections";
+import { requestId1, requestId2 } from "./request.ts";
+import TagsDB from "../types/collections/tagsDB.type.ts";
+import SalesDB from "../types/collections/salesDB.type.ts";
+import PersonsDB from "../types/collections/personsDB.type.ts";
+import { addAdminAndEmployee, whipeData } from "./testUtils.ts";
+import ProductsDB from "../types/collections/productsDB.type.ts";
+import { productsDB, salesDB, personsDB, tagsDB } from "../db/collections/collections.ts";
 
 beforeEach(whipeData);
 

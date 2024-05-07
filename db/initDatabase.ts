@@ -1,6 +1,6 @@
 import loki from "lokijs";
-import { join } from "path";
 import path from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import lfsa from "../utils/loki-fs-sync-adapter.ts";
 

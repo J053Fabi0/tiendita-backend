@@ -1,4 +1,4 @@
-import app from "..";
+import app from "../index.ts";
 import supertest from "supertest";
 
 /**

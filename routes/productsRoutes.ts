@@ -1,7 +1,7 @@
 import { Router } from "express";
-import * as s from "../schemas/productsSchema";
-import * as c from "../controllers/productsController";
-import { authAllRoles, authOnlyAdmins } from "../middlewares/authJWT";
+import * as s from "../schemas/productsSchema.ts";
+import * as c from "../controllers/productsController.ts";
+import { authAllRoles, authOnlyAdmins } from "../middlewares/authJWT.ts";
 
 const productsRoutes = Router();
 
