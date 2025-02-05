@@ -13,6 +13,9 @@ import CommonResponse from "../types/commonResponse.type";
 export const authJWT =
   (onlyAdmins: boolean, permitIfNoAdmin: boolean = false) =>
   (req: CommonRequest, res: CommonResponse, next: NextFunction) => {
+    // If the demo is true, it will permit everything.
+    if (process.env.DEMO === "true") return next();
+
     // If there are no admins, everything is permitted to anyone
     if (permitIfNoAdmin && personsDB.count({ role: "admin" }) === 0) return next();
 
