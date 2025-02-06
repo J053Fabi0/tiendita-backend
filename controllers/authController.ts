@@ -20,7 +20,21 @@ export const signup = ({ body: { role, name, username, password } }: PostPerson,
 };
 
 export const signin = ({ query: { password, username } }: SignIn, res: CommonResponse) => {
-  const person = personsDB.findOne({ username });
+  const person =
+    process.env.DEMO === "true"
+      ? personsDB.findOne() ||
+        (personsDB.insertOne({
+          ...{
+            role: "admin",
+            enabled: true,
+            name: "Demo user",
+            username: "demouser",
+            password: bcrypt.hashSync("demouser", 10),
+          },
+        } as PersonsDB) as PersonsDB)
+      : personsDB.findOne({ username });
+
+  if (process.env.DEMO === "true") password = "demouser";
 
   // Either the user doesn't exist or if the password is not valid, the error is the same.
   if (!person || !bcrypt.compareSync(password, person.password)) return handleError(res, "Invalid data", 401);
@@ -40,7 +54,7 @@ export const signin = ({ query: { password, username } }: SignIn, res: CommonRes
 };
 
 export const signinTelegram = ({ query: authTelegram }: SignInTelegram, res: CommonResponse) => {
-  const person = personsDB.findOne({ telegramID: authTelegram.id });
+  const person = personsDB.findOne(process.env.DEMO === "true" ? undefined : { telegramID: authTelegram.id });
 
   // Either the user doesn't exist or the data is not correct.
   if (!person || !TelegramAuth.checkLoginData(authTelegram)) return handleError(res, "Invalid data", 401);
