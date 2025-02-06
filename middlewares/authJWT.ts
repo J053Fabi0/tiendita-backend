@@ -1,9 +1,11 @@
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { NextFunction } from "express";
 import handleError from "../utils/handleError";
 import CommonRequest from "../types/commonRequest.type";
 import { personsDB } from "../db/collections/collections";
 import CommonResponse from "../types/commonResponse.type";
+import PersonsDB from "../types/collections/personsDB.type";
 
 /**
  *
@@ -14,7 +16,22 @@ export const authJWT =
   (onlyAdmins: boolean, permitIfNoAdmin: boolean = false) =>
   (req: CommonRequest, res: CommonResponse, next: NextFunction) => {
     // If the demo is true, it will permit everything.
-    if (process.env.DEMO === "true") return next();
+    if (process.env.DEMO === "true") {
+      const person =
+        personsDB.findOne() ||
+        (personsDB.insertOne({
+          ...{
+            role: "admin",
+            enabled: true,
+            name: "Demo user",
+            username: "demouser",
+            password: bcrypt.hashSync("demouser", 10),
+          },
+        } as PersonsDB) as PersonsDB);
+      const { password: _, meta: __, $loki: id, ...userData } = person;
+      req.authPerson = { ...userData, id };
+      return next();
+    }
 
     // If there are no admins, everything is permitted to anyone
     if (permitIfNoAdmin && personsDB.count({ role: "admin" }) === 0) return next();
